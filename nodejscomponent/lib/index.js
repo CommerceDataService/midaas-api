@@ -2,12 +2,12 @@
  * Lib
  */
 
- var _       = require("lodash");
- var mysql   = require("mysql");
- var numeral = require("numeraljs");
+var _       = require("lodash");
+var mysql   = require("mysql");
+var numeral = require("numeraljs");
 
- var conn_options = {};
- var connection = mysql.createConnection(conn_options);
+var conn_options = require("./rds-config.json");
+var connection = mysql.createConnection(conn_options);
 
 module.exports.getIncomeMean = function(event, callback) {
 
