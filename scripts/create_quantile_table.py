@@ -28,12 +28,14 @@ def getQuantileIncome(quantile, state, race, sex, agegroup):
     # fetch all results and compute the quantile value
     results = cursor.fetchall()
     r = numpy.asarray(results, dtype=float)
-    pernp = r[:, 0]# * r[:, 2] / 1000000
-    pwgtp = r[:, 1]
+    if len(r) > 0:
+        pernp = r[:, 0]# * r[:, 2] / 1000000
+        pwgtp = r[:, 1]
+        return weighted.quantile(pernp, pwgtp, quantile)
+    else:
+        return 0
 
-    return weighted.quantile(pernp, pwgtp, quantile)
-
-def upsertQuantileData(quantile, state, race, sex, agegroup):
+def insertQuartileData(quantile, state, race, sex, agegroup):
     income = getQuantileIncome(quantile, state, race, sex, agegroup)
     quantileDataList = (int(quantile * 100), "", state, race, sex, agegroup, income)
     valuesString = "(%s, '%s', '%s', '%s', '%s', '%s', %s)" % quantileDataList
