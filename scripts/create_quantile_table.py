@@ -6,39 +6,147 @@ import weighted
 with open("./rds-config.json") as rdsConfigFile:
     config = json.load(rdsConfigFile)
 
-conn = MySQLdb.connect(config["host"], config["user"], config["password"], config["database"])
-cursor = conn.cursor()
+db = MySQLdb.connect(config["host"], config["user"], config["password"], config["database"])
+cursor = db.cursor()
 
-def printQuantile(quantile):
+def getQuantileIncome(quantile, state, race, sex, agegroup):
     # NOTE: please see
     # http://www2.census.gov/programs-surveys/acs/tech_docs/pums/data_dict/PUMSDataDict14.pdf
     # for column identifiers
 
-    # select all records matching the
-    # valid ESR (employment status recode)
-    cursor.execute("""
+    # select all records matching the valid criteria
+    query = """
         SELECT
             PERNP, PWGTP, ADJINC
         FROM
             PUMS_2014_Persons
-        WHERE
-            ST=45 AND
-            # PUMA=00100 AND
-            # RAC1P=2 AND
-            ESR IN (1, 2, 3)
-    """)
+    """
+    query += getWhereClause(state, race, sex, agegroup)
+    cursor.execute(query)
 
+    # fetch all results and compute the quantile value
     results = cursor.fetchall()
     r = numpy.asarray(results, dtype=float)
-    pernp = r[:, 0] * r[:, 2] / 1000000
+    pernp = r[:, 0]# * r[:, 2] / 1000000
     pwgtp = r[:, 1]
-    quantValue = weighted.quantile(pernp, pwgtp, quantile)
-    print "%s quantile: %s" % (quantile, quantValue)
 
-quantiles = [0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 1]
-printQuantile(quantiles[5])
+    return weighted.quantile(pernp, pwgtp, quantile)
 
-# for row in results:
-#     print "puma=%s, esr=%s, rac1p=%s, pernp=%s, pwgtp=%s" % row
+def upsertQuantileData(quantile, state, race, sex, agegroup):
+    income = getQuantileIncome(quantile, state, race, sex, agegroup)
+    quantileDataList = (int(quantile * 100), "all", state, race, sex, agegroup, income)
+    valuesString = "(%s, '%s', '%s', '%s', '%s', '%s', %s)" % quantileDataList
+    command = """
+        INSERT INTO
+            PUMS_2014_Quantiles(QUANTILE, PUMA, ST, RACE, SEX, AGEGROUP, INCOME)
+        VALUES
+    """
+    command += valuesString
+    try:
+       cursor.execute(command)
+       db.commit()
+       print "committed %s" % (valuesString)
+    except:
+       # Rollback in case there is any error
+       db.rollback()
 
-conn.close()
+def getWhereClause(state, race, sex, agegroup):
+    whereClause = [
+        translateStateToQuery(state),
+        translateRaceToQuery(race),
+        translateSexToQuery(sex),
+        translateAgeToQuery(agegroup),
+        "ESR IN (1, 2, 3)"
+    ]
+    return "WHERE " + " AND ".join(filter(None, whereClause))
+
+def translateStateToQuery(state):
+    lookup = {
+        "AL": "01", "AK": "02", "AR": "04",
+        "AR": "05", "CA": "06", "CO": "08",
+        "CT": "09", "DE": "10", "DC": "11",
+        "FL": "12", "GA": "13", "HI": "15",
+        "ID": "16", "IL": "17", "IN": "18",
+        "IA": "19", "KS": "20", "KY": "21",
+        "LA": "22", "ME": "23", "MD": "24",
+        "MA": "25", "MI": "26", "MN": "27",
+        "MS": "28", "MO": "29", "MT": "30",
+        "NE": "31", "NV": "32", "NH": "33",
+        "NJ": "34", "NM": "35", "NY": "36",
+        "NC": "37", "ND": "38", "OH": "39",
+        "OK": "40", "OR": "41", "PA": "42",
+        "RI": "44", "SC": "45", "SD": "46",
+        "TN": "47", "TX": "48", "UT": "49",
+        "VT": "50", "VA": "51", "WA": "53",
+        "WV": "54", "WI": "55", "WY": "56",
+        "PR": "72"
+    }
+    if state is "all":
+        return ""
+    return "ST = '%s'" % (lookup[state])
+
+def translateRaceToQuery(race):
+    if race is "all":
+        return ""
+    return {
+        "white": "RAC1P=1 AND FHISP=0",
+        "african american": "RAC1P=2 AND FHISP=0",
+        "native american": "RAC1P IN (3, 4, 5) AND FHISP=0",
+        "hispanic": "FHISP=1",
+        "asian": "RAC1P=6 AND FHISP=0"
+    }[race]
+
+def translateSexToQuery(sex):
+    if sex is "all":
+        return ""
+    return {
+        "male": "1",
+        "female": "2"
+    }[sex]
+
+def translateAgeToQuery(agegroup):
+    if agegroup is "all":
+        return ""
+    return {
+        "0-15": "AGEP <= 15",
+        "16-25": "AGEP >= 16 AND AGEP <=25",
+        "26-35": "AGEP >= 26 AND AGEP <=35",
+        "36-45": "AGEP >= 36 AND AGEP <=45",
+        "46-55": "AGEP >= 46 AND AGEP <=55",
+        "55-65": "AGEP >= 56 AND AGEP <=65",
+        "65+": "AGEP >= 65"
+    }[agegroup]
+
+quantiles = [
+    0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5,
+    0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 1
+]
+states = [
+    "all",
+    "AL", "AK", "AR", "AR", "CA", "CO", "CT", "DE",
+    "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA",
+    "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN",
+    "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM",
+    "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI",
+    "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA",
+    "WV", "WI", "WY", "PR"
+]
+race = [
+    "all",
+    "white", "african american", "native american",
+    "hispanic", "asian"
+]
+sex = [
+    "all",
+    "male", "female"
+]
+agegroup = [
+    "all",
+    "0-15", "16-25", "26-35", "36-45", "46-55",
+    "55-65", "65+"
+]
+
+for quantile in quantiles:
+    upsertQuantileData(quantile, "all", "all", "all", "all")
+
+db.close()
