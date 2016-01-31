@@ -84,7 +84,7 @@ def translateStateToQuery(state):
     }
     if state is "":
         return ""
-    return "STATE = '%s'" % (lookup[state])
+    return "ST='%s'" % (lookup[state])
 
 def translateRaceToQuery(race):
     if race is "":
@@ -101,8 +101,8 @@ def translateSexToQuery(sex):
     if sex is "":
         return ""
     return {
-        "male": "1",
-        "female": "2"
+        "male": "SEX=1",
+        "female": "SEX=2"
     }[sex]
 
 def translateAgeToQuery(agegroup):
