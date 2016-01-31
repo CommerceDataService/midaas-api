@@ -132,7 +132,7 @@ states = [
     "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM",
     "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI",
     "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA",
-    "WV", "WI", "WY", "PR"
+    "WV", "WI", "WY"
 ]
 races = [
     # "",
@@ -149,17 +149,17 @@ agegroups = [
     "55-65", "65+"
 ]
 
-for state in states:
-    for quantile in quantiles:
-        upsertQuantileData(quantile, state, "", "", "")
+# for state in states:
+#     for quantile in quantiles:
+#         insertQuartileData(quantile, state, "", "", "")
 
 for state in states:
     for quantile in quantiles:
         for race in races:
-            upsertQuantileData(quantile, state, race, "", "")
+            insertQuartileData(quantile, state, race, "", "")
         for sex in sexes:
-            upsertQuantileData(quantile, state, "", sex, "")
+            insertQuartileData(quantile, state, "", sex, "")
         for agegroup in agegroups:
-            upsertQuantileData(quantile, state, "", "", agegroup)
+            insertQuartileData(quantile, state, "", "", agegroup)
 
 db.close()
