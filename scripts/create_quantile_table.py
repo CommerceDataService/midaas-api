@@ -3,7 +3,8 @@ import MySQLdb
 import numpy
 import weighted
 
-with open("./rds-config.json") as rdsConfigFile:
+with open("./local-config.json") as rdsConfigFile:
+# with open("./rds-config.json") as rdsConfigFile:
     config = json.load(rdsConfigFile)
 
 db = MySQLdb.connect(config["host"], config["user"], config["password"], config["database"])
