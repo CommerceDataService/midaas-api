@@ -2,7 +2,7 @@
 
 ## magnets, how do they work?
 
-This project uses serverless. Please consult [the serverless docs](http://docs.serverless.com) for more information on running locally and deploying.
+This project uses [serverless](http://www.serverless.com) - based upon [AWS Lambda](https://aws.amazon.com/lambda/) and [API Gateway](https://aws.amazon.com/api-gateway/). Please consult [the serverless docs](http://docs.serverless.com) for more information on running locally and deploying.
 
 ## api documentation
 
