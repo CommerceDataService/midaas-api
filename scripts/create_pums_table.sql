@@ -1,3 +1,4 @@
+-- NOTE: generated with csvsql
 CREATE TABLE PUMS_2014_Persons (
   `RT` VARCHAR(1),
   `SERIALNO` INTEGER,
