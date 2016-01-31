@@ -133,22 +133,26 @@ states = [
     "WV", "WI", "WY", "PR"
 ]
 races = [
-    "",
+    # "",
     "white", "african american", "native american",
     "hispanic", "asian"
 ]
 sexes = [
-    "",
+    # "",
     "male", "female"
 ]
 agegroups = [
-    "",
+    # "",
     "0-15", "16-25", "26-35", "36-45", "46-55",
     "55-65", "65+"
 ]
 
-for quantile in quantiles:
-    for state in states:
+for state in states:
+    for quantile in quantiles:
+        upsertQuantileData(quantile, state, "", "", "")
+
+for state in states:
+    for quantile in quantiles:
         for race in races:
             upsertQuantileData(quantile, state, race, "", "")
         for sex in sexes:
