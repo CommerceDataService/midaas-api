@@ -33,3 +33,13 @@ module.exports.getIncomeMean = function(event, callback) {
 	});
 
 }
+
+module.exports.getIncomeQuantiles = function(event, callback) {
+
+  var sql = "SELECT QUANTILE, INCOME FROM PUMS_2014_Quantiles";
+
+  connection.query(sql, function(err, results, fields){
+    return callback(err, results);
+	});
+
+}
