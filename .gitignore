@@ -42,3 +42,4 @@ _meta
 
 #SECURE CONFIG
 rds-config.json
+local-config.json
