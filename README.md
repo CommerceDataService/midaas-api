@@ -32,7 +32,7 @@ curl https: //x0suepap69.execute-api.us-east-1.amazonaws.com/development/income/
 
 ### [GET] /income/distribution
 **query params**:  state, race, sex, agegroup _(see below for options)_<br>
-**response format**:  `{'<distribution>':  <percentage>}`<br>
+**response format**:  `{'<income bin>':  <percentage>}`<br>
 **example**:
 ```
 curl https: //x0suepap69.execute-api.us-east-1.amazonaws.com/development/income/distribution?state=CA&race=white&agegroup=26-35&sex=male
