@@ -1,7 +1,7 @@
 {
   "name": "mean",
   "handler": "income/mean/handler.handler",
-  "timeout": 6,
+  "timeout": 30,
   "memorySize": 1024,
   "custom": {
     "excludePatterns": [],
@@ -16,7 +16,12 @@
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": ""
+        "application/json": {
+          "state": "$input.params('state')",
+          "race": "$input.params('race')",
+          "sex": "$input.params('sex')",
+          "agegroup": "$input.params('agegroup')"
+        }
       },
       "responses": {
         "400": {
