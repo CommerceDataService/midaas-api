@@ -16,7 +16,12 @@
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": ""
+        "application/json": {
+          "state": "$input.params('state')",
+          "race": "$input.params('race')",
+          "sex": "$input.params('sex')",
+          "agegroup": "$input.params('agegroup')"
+        }
       },
       "responses": {
         "400": {
