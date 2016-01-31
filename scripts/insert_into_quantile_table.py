@@ -18,7 +18,7 @@ def getQuantileIncome(quantile, state, race, sex, agegroup):
     # select all records matching the valid criteria
     query = """
         SELECT
-            PERNP, PWGTP, ADJINC
+            PERNP, PWGTP#, ADJINC
         FROM
             PUMS_2014_Persons
     """
@@ -125,7 +125,7 @@ quantiles = [
     0.6, 0.7, 0.8, 0.9, 0.95, 0.99
 ]
 states = [
-    "",
+    # "",
     "AL", "AK", "AR", "AR", "CA", "CO", "CT", "DE",
     "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA",
     "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN",
