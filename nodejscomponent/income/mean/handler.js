@@ -19,4 +19,5 @@ module.exports.handler = function(event, context) {
   lib.getIncomeMean(event, function(error, response) {
     return context.done(error, response);
   });
+  
 };
