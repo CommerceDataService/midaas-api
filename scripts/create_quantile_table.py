@@ -34,11 +34,11 @@ def getQuantileIncome(quantile, state, race, sex, agegroup):
 
 def upsertQuantileData(quantile, state, race, sex, agegroup):
     income = getQuantileIncome(quantile, state, race, sex, agegroup)
-    quantileDataList = (int(quantile * 100), "all", state, race, sex, agegroup, income)
+    quantileDataList = (int(quantile * 100), "", state, race, sex, agegroup, income)
     valuesString = "(%s, '%s', '%s', '%s', '%s', '%s', %s)" % quantileDataList
     command = """
         INSERT INTO
-            PUMS_2014_Quantiles(QUANTILE, PUMA, ST, RACE, SEX, AGEGROUP, INCOME)
+            PUMS_2014_Quantiles(QUANTILE, PUMA, STATE, RACE, SEX, AGEGROUP, INCOME)
         VALUES
     """
     command += valuesString
@@ -81,12 +81,12 @@ def translateStateToQuery(state):
         "WV": "54", "WI": "55", "WY": "56",
         "PR": "72"
     }
-    if state is "all":
+    if state is "":
         return ""
-    return "ST = '%s'" % (lookup[state])
+    return "STATE = '%s'" % (lookup[state])
 
 def translateRaceToQuery(race):
-    if race is "all":
+    if race is "":
         return ""
     return {
         "white": "RAC1P=1 AND FHISP=0",
@@ -97,7 +97,7 @@ def translateRaceToQuery(race):
     }[race]
 
 def translateSexToQuery(sex):
-    if sex is "all":
+    if sex is "":
         return ""
     return {
         "male": "1",
@@ -105,7 +105,7 @@ def translateSexToQuery(sex):
     }[sex]
 
 def translateAgeToQuery(agegroup):
-    if agegroup is "all":
+    if agegroup is "":
         return ""
     return {
         "0-15": "AGEP <= 15",
@@ -122,7 +122,7 @@ quantiles = [
     0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 1
 ]
 states = [
-    "all",
+    "",
     "AL", "AK", "AR", "AR", "CA", "CO", "CT", "DE",
     "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA",
     "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN",
@@ -131,22 +131,28 @@ states = [
     "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA",
     "WV", "WI", "WY", "PR"
 ]
-race = [
-    "all",
+races = [
+    "",
     "white", "african american", "native american",
     "hispanic", "asian"
 ]
-sex = [
-    "all",
+sexes = [
+    "",
     "male", "female"
 ]
-agegroup = [
-    "all",
+agegroups = [
+    "",
     "0-15", "16-25", "26-35", "36-45", "46-55",
     "55-65", "65+"
 ]
 
 for quantile in quantiles:
-    upsertQuantileData(quantile, "all", "all", "all", "all")
+    for state in states:
+        for race in races:
+            upsertQuantileData(quantile, state, race, "", "")
+        for sex in sexes:
+            upsertQuantileData(quantile, state, "", sex, "")
+        for agegroup in agegroups:
+            upsertQuantileData(quantile, state, "", "", agegroup)
 
 db.close()
