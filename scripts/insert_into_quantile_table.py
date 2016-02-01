@@ -18,7 +18,7 @@ def getQuantileIncome(quantile, state, race, sex, agegroup):
     # select all records matching the valid criteria
     query = """
         SELECT
-            PERNP, PWGTP#, ADJINC
+            PERNP, PWGTP, ADJINC
         FROM
             PUMS_2014_Persons
     """
@@ -29,7 +29,7 @@ def getQuantileIncome(quantile, state, race, sex, agegroup):
     results = cursor.fetchall()
     r = numpy.asarray(results, dtype=float)
     if len(r) > 0:
-        pernp = r[:, 0]# * r[:, 2] / 1000000
+        pernp = r[:, 0] * r[:, 2] / 1000000
         pwgtp = r[:, 1]
         return weighted.quantile(pernp, pwgtp, quantile)
     else:
@@ -125,7 +125,7 @@ quantiles = [
     0.6, 0.7, 0.8, 0.9, 0.95, 0.99
 ]
 states = [
-    # "",
+    "",
     "AL", "AK", "AR", "AR", "CA", "CO", "CT", "DE",
     "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA",
     "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN",
@@ -149,9 +149,9 @@ agegroups = [
     "55-65", "65+"
 ]
 
-# for state in states:
-#     for quantile in quantiles:
-#         insertQuartileData(quantile, state, "", "", "")
+for state in states:
+    for quantile in quantiles:
+        insertQuartileData(quantile, state, "", "", "")
 
 for state in states:
     for quantile in quantiles:
