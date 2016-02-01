@@ -15,6 +15,7 @@ module.exports.getIncomeMean = function(event, callback) {
 
   var sql = "SELECT AVG(WAGP)*ADJINC/1000000 AS MEAN_INCOME FROM PUMS_2014_Persons";
 
+  // TODO: need to validate queryParams
   queryParams = _.pick(event, ["state", "race", "sex", "agegroup"]);
   sql = utils.appendTranslatedWhereClause(sql, queryParams) + ";";
 
@@ -29,6 +30,7 @@ module.exports.getIncomeQuantiles = function(event, callback) {
 
   var sql = "SELECT QUANTILE, INCOME FROM PUMS_2014_Quantiles";
 
+  // TODO: need to validate queryParams
   queryParams = _.pick(event, ["state", "race", "sex", "agegroup"]);
   sql = utils.appendWhereClause(sql, queryParams) + ";";
 
@@ -50,6 +52,7 @@ module.exports.getIncomeDistribution = function(event, callback) {
     " COUNT(*) AS COUNT" +
     " FROM PUMS_2014_Persons";
 
+  // TODO: need to validate queryParams
   queryParams = _.pick(event, ["state", "race", "sex", "agegroup"]);
   sql = utils.appendTranslatedWhereClause(sql, queryParams);
   sql += " GROUP BY BUCKET;";
