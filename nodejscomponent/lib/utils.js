@@ -10,7 +10,7 @@ var numeral = require("numeraljs");
  ***************************************************************/
 
 var translateStateToQuery = function(state) {
-  lookup = {
+  var lookup = {
     "AL": "01", "AK": "02", "AR": "04",
     "AR": "05", "CA": "06", "CO": "08",
     "CT": "09", "DE": "10", "DC": "11",
@@ -29,20 +29,19 @@ var translateStateToQuery = function(state) {
     "VT": "50", "VA": "51", "WA": "53",
     "WV": "54", "WI": "55", "WY": "56",
     "PR": "72"
+  };
+  var stateValue = lookup[state];
+  if(stateValue) {
+    return "ST='" + lookup[state] + "'";
   }
-  if(state=="") {
-    return "";
-  }
-  return "ST='" + lookup[state] + "'";
+  return undefined;
 };
 
 var translateRaceToQuery = function(race) {
-  if(race=="") {
-    return "";
-  }
   return {
     "white": "RAC1P=1 AND FHISP=0",
     "african american": "RAC1P=2 AND FHISP=0",
+    "black": "RAC1P=2 AND FHISP=0",
     "native american": "RAC1P IN (3, 4, 5) AND FHISP=0",
     "hispanic": "FHISP=1",
     "asian": "RAC1P=6 AND FHISP=0"
@@ -50,9 +49,6 @@ var translateRaceToQuery = function(race) {
 };
 
 var translateSexToQuery = function(sex) {
-  if(sex=="") {
-    return "";
-  }
   return {
     "male": "SEX=1",
     "female": "SEX=2"
@@ -60,9 +56,6 @@ var translateSexToQuery = function(sex) {
 };
 
 var translateAgeToQuery = function(agegroup) {
-  if(agegroup=="") {
-    return ""
-  }
   return {
     "0-15": "AGEP <= 15",
     "16-25": "AGEP >= 16 AND AGEP <=25",
@@ -74,12 +67,12 @@ var translateAgeToQuery = function(agegroup) {
   }[agegroup];
 };
 
-var appendWhereClause = function(sql, validQueries) {
-  // console.log(validQueries);
-  if(!_.isEmpty(validQueries)) {
+var appendWhereClause = function(sql, queryParams) {
+  // console.log(queryParams);
+  if(!_.isEmpty(queryParams)) {
     sql += " WHERE ";
     sqlWhere = [];
-    _.forOwn(validQueries, function(value, key) {
+    _.forOwn(queryParams, function(value, key) {
       sqlWhere.push(key + "='" + value + "'");
     });
     sql += sqlWhere.join(" AND ");
@@ -95,14 +88,14 @@ var getWhereClause = function(params) {
     translateAgeToQuery(params.agegroup),
     "ESR IN (1, 2, 3)"
   ];
-  whereClause = _.without(whereClause, "");
+  whereClause = _.compact(whereClause);
   return " WHERE " + whereClause.join(" AND ");
 }
 
-var appendTranslatedWhereClause = function(sql, validQueries) {
-  // console.log(validQueries);
-  if(!_.isEmpty(validQueries)) {
-    sql += getWhereClause(validQueries);
+var appendTranslatedWhereClause = function(sql, queryParams) {
+  // console.log(queryParams);
+  if(!_.isEmpty(queryParams)) {
+    sql += getWhereClause(queryParams);
   }
   return sql;
 }

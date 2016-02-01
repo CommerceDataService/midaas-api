@@ -15,8 +15,8 @@ module.exports.getIncomeMean = function(event, callback) {
 
   var sql = "SELECT AVG(WAGP)*ADJINC/1000000 AS MEAN_INCOME FROM PUMS_2014_Persons";
 
-  validQueries = _.pick(event, ["state", "race", "sex", "agegroup"]);
-  sql = utils.appendTranslatedWhereClause(sql, validQueries) + ";";
+  queryParams = _.pick(event, ["state", "race", "sex", "agegroup"]);
+  sql = utils.appendTranslatedWhereClause(sql, queryParams) + ";";
 
   connection.query(sql, function(err, results, fields){
     var mean = results[0]["MEAN_INCOME"];
@@ -29,8 +29,8 @@ module.exports.getIncomeQuantiles = function(event, callback) {
 
   var sql = "SELECT QUANTILE, INCOME FROM PUMS_2014_Quantiles";
 
-  validQueries = _.pick(event, ["state", "race", "sex", "agegroup"]);
-  sql = utils.appendWhereClause(sql, validQueries) + ";";
+  queryParams = _.pick(event, ["state", "race", "sex", "agegroup"]);
+  sql = utils.appendWhereClause(sql, queryParams) + ";";
 
   connection.query(sql, function(err, results, fields){
     resultsObj = {};
@@ -50,8 +50,8 @@ module.exports.getIncomeDistribution = function(event, callback) {
     " COUNT(*) AS COUNT" +
     " FROM PUMS_2014_Persons";
 
-  validQueries = _.pick(event, ["state", "race", "sex", "agegroup"]);
-  sql = utils.appendTranslatedWhereClause(sql, validQueries);
+  queryParams = _.pick(event, ["state", "race", "sex", "agegroup"]);
+  sql = utils.appendTranslatedWhereClause(sql, queryParams);
   sql += " GROUP BY BUCKET;";
   // return callback(null, sql);
   connection.query(sql, function(err, results, fields){
