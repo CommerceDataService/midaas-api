@@ -55,7 +55,7 @@ var translateSexToQuery = function(sex) {
   }[sex];
 };
 
-var translateAgeToQuery = function(agegroup) {
+var translateAgegroupToQuery = function(agegroup) {
   return {
     "0-15": "AGEP <= 15",
     "16-25": "AGEP >= 16 AND AGEP <=25",
@@ -67,7 +67,35 @@ var translateAgeToQuery = function(agegroup) {
   }[agegroup];
 };
 
+var validateQueryParams = function(queryParams, callback) {
+  // return an error callback if we encounter any issues
+  state = queryParams["state"];
+  if(state && !translateStateToQuery(state)) {
+    return callback(new Error("Invalid value (" + state + ") supplied for state. " +
+      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+  }
+  race = queryParams["race"];
+  if(race && !translateRaceToQuery(race)) {
+    return callback(new Error("Invalid value (" + race + ") supplied for race. " +
+      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+  }
+  sex = queryParams["sex"];
+  if(sex && !translateSexToQuery(sex)) {
+    return callback(new Error("Invalid value (" + sex + ") supplied for sex. " +
+      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+  }
+  agegroup = queryParams["agegroup"];
+  if(agegroup && !translateAgegroupToQuery(agegroup)) {
+    return callback(new Error("Invalid value (" + agegroup + ") supplied for agegroup. " +
+      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+  }
+  // return successfully if we haven't
+  return callback();
+}
+
 var appendWhereClause = function(sql, queryParams) {
+  // NOTE: need to query with "" (empty strings to be inclusive)
+  // of parameters that we aren't querying on
   // console.log(queryParams);
   if(!_.isEmpty(queryParams)) {
     sql += " WHERE ";
@@ -78,31 +106,31 @@ var appendWhereClause = function(sql, queryParams) {
     sql += sqlWhere.join(" AND ");
   }
   return sql;
-}
+};
 
-var getWhereClause = function(params) {
+var getTranslatedWhereClause = function(queryParams) {
   var whereClause = [
-    translateStateToQuery(params.state),
-    translateRaceToQuery(params.race),
-    translateSexToQuery(params.sex),
-    translateAgeToQuery(params.agegroup),
+    translateStateToQuery(queryParams["state"]),
+    translateRaceToQuery(queryParams["race"]),
+    translateSexToQuery(queryParams["sex"]),
+    translateAgegroupToQuery(queryParams["agegroup"]),
     "ESR IN (1, 2, 3)"
   ];
   whereClause = _.compact(whereClause);
   return " WHERE " + whereClause.join(" AND ");
-}
+};
 
 var appendTranslatedWhereClause = function(sql, queryParams) {
   // console.log(queryParams);
   if(!_.isEmpty(queryParams)) {
-    sql += getWhereClause(queryParams);
+    sql += getTranslatedWhereClause(queryParams);
   }
   return sql;
-}
+};
 
 var formatIncome = function(income) {
   return numeral(income).format("($0.00a)");
-}
+};
 
 /***************************************************************
                           EXPORTS
@@ -110,4 +138,5 @@ var formatIncome = function(income) {
 
 module.exports.appendWhereClause = appendWhereClause;
 module.exports.appendTranslatedWhereClause = appendTranslatedWhereClause;
+module.exports.validateQueryParams = validateQueryParams;
 module.exports.formatIncome = formatIncome;

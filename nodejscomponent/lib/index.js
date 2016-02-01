@@ -11,66 +11,58 @@ var utils   = require("./utils.js");
 var conn_options = require("./rds-config.json");
 var connection = mysql.createConnection(conn_options);
 
-module.exports.getIncomeMean = function(event, callback) {
-
-  var sql = "SELECT AVG(WAGP)*ADJINC/1000000 AS MEAN_INCOME FROM PUMS_2014_Persons";
-
-  // TODO: need to validate queryParams
-  queryParams = _.pick(event, ["state", "race", "sex", "agegroup"]);
-  sql = utils.appendTranslatedWhereClause(sql, queryParams) + ";";
-
-  connection.query(sql, function(err, results, fields){
-    var mean = results[0]["MEAN_INCOME"];
-    return callback(err, {"mean": utils.formatIncome(mean)});
-	});
-
-}
-
 module.exports.getIncomeQuantiles = function(event, callback) {
 
-  var sql = "SELECT QUANTILE, INCOME FROM PUMS_2014_Quantiles";
-
-  // TODO: need to validate queryParams
   queryParams = _.pick(event, ["state", "race", "sex", "agegroup"]);
-  sql = utils.appendWhereClause(sql, queryParams) + ";";
 
-  connection.query(sql, function(err, results, fields){
-    resultsObj = {};
-    _.forEach(results, function(result) {
-      resultsObj[result["QUANTILE"]] = result["INCOME"];
-    })
+  utils.validateQueryParams(queryParams, function(err, validateCallback) {
+    if(err) { return callback(err); }
 
-    return callback(err, resultsObj);
-	});
+    var sql = "SELECT QUANTILE, INCOME FROM PUMS_2014_Quantiles";
+    sql = utils.appendWhereClause(sql, queryParams) + ";";
+
+    connection.query(sql, function(err, results, fields){
+      resultsObj = {};
+      _.forEach(results, function(result) {
+        resultsObj[result["QUANTILE"]] = result["INCOME"];
+      })
+
+      return callback(err, resultsObj);
+  	});
+  });
 
 }
 
 module.exports.getIncomeDistribution = function(event, callback) {
 
-  var sql =
-    "SELECT FLOOR((PERNP*ADJINC/1000000)/10000)*10000 AS BUCKET," +
-    " COUNT(*) AS COUNT" +
-    " FROM PUMS_2014_Persons";
-
-  // TODO: need to validate queryParams
   queryParams = _.pick(event, ["state", "race", "sex", "agegroup"]);
-  sql = utils.appendTranslatedWhereClause(sql, queryParams);
-  sql += " GROUP BY BUCKET;";
-  // return callback(null, sql);
-  connection.query(sql, function(err, results, fields){
-    resultsObj = {};
-    total = _.sumBy(results, (function(result) {
-      return result["COUNT"];
-    }));
-    _.forEach(results, function(result, i) {
-      start = utils.formatIncome(results[i]["BUCKET"]);
-      end = utils.formatIncome(results[i]["BUCKET"] + 10000);
-      key = "" + start + "-" + end;
-      // key = result["BUCKET"];
-      resultsObj[key] = result["COUNT"]/total;
-    })
 
-    return callback(err, resultsObj);
-	});
+  utils.validateQueryParams(queryParams, function(err, validateCallback) {
+    if(err) { return callback(err); }
+
+    var sql =
+      "SELECT FLOOR((PERNP*ADJINC/1000000)/10000)*10000 AS BUCKET," +
+      " COUNT(*) AS COUNT" +
+      " FROM PUMS_2014_Persons";
+
+    sql = utils.appendTranslatedWhereClause(sql, queryParams);
+    sql += " GROUP BY BUCKET;";
+    // return callback(null, sql);
+    connection.query(sql, function(err, results, fields){
+      resultsObj = {};
+      total = _.sumBy(results, (function(result) {
+        return result["COUNT"];
+      }));
+      _.forEach(results, function(result, i) {
+        start = utils.formatIncome(results[i]["BUCKET"]);
+        end = utils.formatIncome(results[i]["BUCKET"] + 10000);
+        key = "" + start + "-" + end;
+        // key = result["BUCKET"];
+        resultsObj[key] = result["COUNT"]/total;
+      })
+
+      return callback(err, resultsObj);
+  	});
+  });
 
 }
