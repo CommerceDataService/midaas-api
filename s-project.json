@@ -1,7 +1,7 @@
 {
   "name": "midaas-api",
   "version": "0.0.1",
-  "profile": "serverless-v0.2.1",
+  "profile": "serverless-v0.3.3",
   "location": "https://github.com/...",
   "author": "",
   "description": "A Slick New Serverless Project",
