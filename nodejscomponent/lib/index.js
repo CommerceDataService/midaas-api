@@ -21,8 +21,7 @@ module.exports.getIncomeQuantiles = function(event, callback) {
     sql = utils.appendWhereClause(sql, queryParams) + ";";
     // return callback(null, sql);
 
-    var client = new pg.Client(conn_options);
-    client.connect(function(err) {
+    pg.connect(conn_options, function(err, client, done) {
       if(err) { return callback(err); }
 
       client.query(sql, function(err, response) {
@@ -58,8 +57,7 @@ module.exports.getIncomeDistribution = function(event, callback) {
     sql += " GROUP BY BUCKET;";
     // return callback(null, sql);
 
-    var client = new pg.Client(conn_options);
-    client.connect(function(err) {
+    pg.connect(conn_options, function(err, client, done) {
       if(err) { return callback(err); }
 
       client.query(sql, function(err, response) {
