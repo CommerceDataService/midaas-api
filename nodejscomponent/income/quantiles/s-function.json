@@ -24,7 +24,8 @@
           "state": "$input.params('state')",
           "race": "$input.params('race')",
           "sex": "$input.params('sex')",
-          "agegroup": "$input.params('agegroup')"
+          "agegroup": "$input.params('agegroup')",
+          "compare": "$input.params('compare')"
         }
       },
       "responses": {

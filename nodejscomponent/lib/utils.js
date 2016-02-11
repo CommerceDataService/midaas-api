@@ -89,6 +89,11 @@ var validateQueryParams = function(queryParams, callback) {
     return callback(new Error("Invalid value (" + agegroup + ") supplied for agegroup. " +
       "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
   }
+  compare = queryParams["compare"];
+  if(compare && !_.includes(["state", "race", "sex", "agegroup"], compare)) {
+    return callback(new Error("Invalid value (" + compare + ") supplied for compare. " +
+      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+  }
   // return successfully if we haven't
   return callback();
 }
