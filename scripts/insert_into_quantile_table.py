@@ -1,14 +1,14 @@
 import json
-import MySQLdb
+import psycopg2
 import numpy
 import weighted
 
-with open("./local-config.json") as rdsConfigFile:
-# with open("./rds-config.json") as rdsConfigFile:
+# with open("./local-config.json") as rdsConfigFile:
+with open("./redshift-config.json") as rdsConfigFile:
     config = json.load(rdsConfigFile)
 
-db = MySQLdb.connect(config["host"], config["user"], config["password"], config["database"])
-cursor = db.cursor()
+conn = psycopg2.connect(host=config["host"], user=config["user"], password=config["password"], dbname=config["database"], port=config["port"])
+cursor = conn.cursor()
 
 def getQuantileIncome(quantile, state, race, sex, agegroup):
     # NOTE: please see
@@ -47,11 +47,11 @@ def insertQuartileData(quantile, state, race, sex, agegroup):
     command += valuesString
     try:
        cursor.execute(command)
-       db.commit()
+       conn.commit()
        print "committed %s" % (valuesString)
     except:
        # Rollback in case there is any error
-       db.rollback()
+       conn.rollback()
 
 def getWhereClause(state, race, sex, agegroup):
     whereClause = [
@@ -162,4 +162,4 @@ for state in states:
         for agegroup in agegroups:
             insertQuartileData(quantile, state, "", "", agegroup)
 
-db.close()
+conn.close()

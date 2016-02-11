@@ -1,13 +1,2 @@
-LOAD DATA INFILE '/tmp/ss14pusa.csv'
-INTO TABLE PUMS_2014_Persons
-FIELDS TERMINATED BY ','
-ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 ROWS;
-
-LOAD DATA INFILE '/tmp/ss14pusb.csv'
-INTO TABLE PUMS_2014_Persons
-FIELDS TERMINATED BY ','
-ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 ROWS;
+copy PUMS_2014_Persons from 's3://midaas-csv/ss14pusa.csv' credentials 'aws_access_key_id=<aws_access_key_id>;aws_secret_access_key=<aws_secret_access_key>' blanksasnull emptyasnull maxerror 10 delimiter ',' ignoreheader 1;
+copy PUMS_2014_Persons from 's3://midaas-csv/ss14pusb.csv' credentials 'aws_access_key_id=<aws_access_key_id>;aws_secret_access_key=<aws_secret_access_key>' blanksasnull emptyasnull maxerror 10 delimiter ',' ignoreheader 1;
