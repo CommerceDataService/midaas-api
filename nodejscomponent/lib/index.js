@@ -25,7 +25,7 @@ module.exports.getIncomeQuantiles = function(event, callback) {
       if(err) { return callback(err); }
 
       client.query(sql, function(err, response) {
-        client.end();
+        done();
         if(err) { return callback(err); }
 
         var results = response.rows;
@@ -61,7 +61,7 @@ module.exports.getIncomeDistribution = function(event, callback) {
       if(err) { return callback(err); }
 
       client.query(sql, function(err, response) {
-        client.end();
+        done();
         if(err) { return callback(err); }
 
         var results = response.rows;
