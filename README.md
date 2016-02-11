@@ -11,7 +11,7 @@ This project uses [serverless](http://www.serverless.com) (a framework based upo
 **response format**:  `{'<quantile>':  <income>}`<br>
 **example**:
 ```
-curl https://x0suepap69.execute-api.us-east-1.amazonaws.com/development/income/quantiles?state=AL
+curl https://brbimhg0w9.execute-api.us-west-2.amazonaws.com/dev/income/quantiles?state=AL
 {
   "1": 0,
   "5": 480,
@@ -35,7 +35,7 @@ curl https://x0suepap69.execute-api.us-east-1.amazonaws.com/development/income/q
 **response format**:  `{'<income bin>':  <percentage>}`<br>
 **example**:
 ```
-curl https://x0suepap69.execute-api.us-east-1.amazonaws.com/development/income/distribution?state=CA&race=white&agegroup=26-35&sex=male
+curl https://brbimhg0w9.execute-api.us-west-2.amazonaws.com/dev/income/distribution?state=CA&race=white&agegroup=26-35&sex=male
 {
   "($10.00k)-$0.00": 0.0002444390124663896,
   "$0.00-$10.00k": 0.11814552269208832,
