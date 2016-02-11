@@ -42,4 +42,5 @@ _meta
 
 #SECURE CONFIG
 rds-config.json
+redshift-config.json
 local-config.json
