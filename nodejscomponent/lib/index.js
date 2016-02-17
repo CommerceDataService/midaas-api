@@ -106,14 +106,15 @@ module.exports.getIncomeDistribution = function(event, callback) {
         var results = response.rows;
         resultsObj = {};
         total = _.sumBy(results, (function(result) {
-          return result["count"];
+          return parseInt(result["count"]);
         }));
         _.forEach(results, function(result, i) {
-          start = utils.formatIncome(results[i]["bucket"]);
-          end = utils.formatIncome(results[i]["bucket"] + 10000);
-          key = "" + start + "-" + end;
+          var bucket = parseInt(results[i]["bucket"]);
+          var start = utils.formatIncome(bucket);
+          var end = utils.formatIncome(bucket + 10000);
+          var key = "" + start + "-" + end;
           // key = result["bucket"];
-          resultsObj[key] = result["count"]/total;
+          resultsObj[key] = parseInt(result["count"])/total;
         })
 
         return callback(err, resultsObj);
