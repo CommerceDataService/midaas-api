@@ -88,7 +88,7 @@ module.exports.getIncomeDistribution = function(event, callback) {
     if(err) { return callback(err); }
 
     var sql =
-      "SELECT FLOOR((PERNP*ADJINC/1000000)/10000)*10000 AS BUCKET," +
+      "SELECT FLOOR(PERNP/10000)*10000 AS BUCKET," +
       " SUM(PWGTP) AS COUNT" +
       " FROM PUMS_2014_Persons";
 
