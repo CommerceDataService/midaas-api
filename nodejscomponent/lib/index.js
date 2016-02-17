@@ -89,7 +89,7 @@ module.exports.getIncomeDistribution = function(event, callback) {
 
     var sql =
       "SELECT FLOOR((PERNP*ADJINC/1000000)/10000)*10000 AS BUCKET," +
-      " COUNT(*) AS COUNT" +
+      " SUM(PWGTP) AS COUNT" +
       " FROM PUMS_2014_Persons";
 
     sql = utils.appendTranslatedWhereClause(sql, queryParams);
