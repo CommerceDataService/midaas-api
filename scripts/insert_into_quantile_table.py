@@ -65,7 +65,7 @@ def getWhereClause(state, race, sex, agegroup):
 
 def translateStateToQuery(state):
     lookup = {
-        "AL": "01", "AK": "02", "AR": "04",
+        "AL": "01", "AK": "02", "AZ": "04",
         "AR": "05", "CA": "06", "CO": "08",
         "CT": "09", "DE": "10", "DC": "11",
         "FL": "12", "GA": "13", "HI": "15",
