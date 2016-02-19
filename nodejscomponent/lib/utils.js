@@ -42,7 +42,6 @@ var translateRaceToQuery = function(race) {
     "white": "RAC1P=1 AND FHISP=0",
     "african american": "RAC1P=2 AND FHISP=0",
     "black": "RAC1P=2 AND FHISP=0",
-    "native american": "RAC1P IN (3, 4, 5) AND FHISP=0",
     "hispanic": "FHISP=1",
     "asian": "RAC1P=6 AND FHISP=0"
   }[race];
