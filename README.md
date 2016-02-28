@@ -1,6 +1,6 @@
 # midaas-api
 
-## magnets, how do they work?
+## overview
 
 This project uses [serverless](http://www.serverless.com) (a framework based upon [AWS Lambda](https://aws.amazon.com/lambda/) and [API Gateway](https://aws.amazon.com/api-gateway/)). Please consult [the serverless docs](http://docs.serverless.com) for more information on running locally and deploying.
 
