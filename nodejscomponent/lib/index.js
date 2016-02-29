@@ -143,7 +143,7 @@ _getIncomeQuantiles = function(queryParams, callback) {
 
 module.exports.getIncomeQuantiles = function(event, callback) {
 
-  var queryParams = _.pick(event, ["state", "race", "sex", "agegroup", "compare"]);
+  var queryParams = _.pick(event, ["state", "race", "sex", "agegroup", "quantile", "compare"]);
 
   utils.validateQueryParams(queryParams, function(err, validateCallback) {
     if(err) { return callback(err); }

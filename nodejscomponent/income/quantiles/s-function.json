@@ -25,6 +25,7 @@
           "race": "$input.params('race')",
           "sex": "$input.params('sex')",
           "agegroup": "$input.params('agegroup')",
+          "quantile": "$input.params('quantile')",
           "compare": "$input.params('compare')"
         }
       },

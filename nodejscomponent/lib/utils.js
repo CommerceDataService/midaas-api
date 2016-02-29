@@ -66,6 +66,15 @@ var translateAgegroupToQuery = function(agegroup) {
   }[agegroup];
 };
 
+var translateQuantileToQuery = function(quantile) {
+  intQuantile = parseInt(quantile);
+  if(intQuantile >= 0 && intQuantile <= 100) {
+    return "QUANTILE='" + quantile + "'";
+  } else {
+    return undefined;
+  }
+};
+
 var validateQueryParams = function(queryParams, callback) {
   // return an error callback if we encounter any issues
   state = queryParams["state"];
@@ -88,6 +97,11 @@ var validateQueryParams = function(queryParams, callback) {
     return callback(new Error("Invalid value (" + agegroup + ") supplied for agegroup. " +
       "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
   }
+  quantile = queryParams["quantile"];
+  if(quantile && !translateQuantileToQuery(quantile)) {
+    return callback(new Error("Invalid value (" + quantile + ") supplied for quantile. " +
+      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+  }
   compare = queryParams["compare"];
   if(compare && !_.includes(["state", "race", "sex", "agegroup"], compare)) {
     return callback(new Error("Invalid value (" + compare + ") supplied for compare. " +
@@ -105,7 +119,9 @@ var appendWhereClause = function(sql, queryParams) {
     sql += " WHERE ";
     sqlWhere = [];
     _.forOwn(queryParams, function(value, key) {
-      sqlWhere.push(key + "='" + value + "'");
+      if (!(key.toLowerCase() === "quantile" && value === "")) {
+        sqlWhere.push(key + "='" + value + "'");
+      }
     });
     sql += sqlWhere.join(" AND ");
   }
