@@ -10,6 +10,84 @@ var utils   = require("./utils.js");
 
 var conn_options = require("./redshift-config.json");
 
+/* --------------------------------------------------------
+   income / median
+   -------------------------------------------------------- */
+
+_getCompareIncomeMedian = function(queryParams, callback) {
+  var compare = queryParams.compare;
+  if(compare && compare !== "") {
+    delete queryParams[compare];
+  }
+  delete queryParams["compare"];
+
+  var sql = "SELECT INCOME, " + compare + " FROM PUMS_2014_Quantiles";
+  sql = utils.appendWhereClause(sql, queryParams) + " AND QUANTILE='50';";
+
+  pg.connect(conn_options, function(err, client, done) {
+    if(err) { return callback(err); }
+
+    client.query(sql, function(err, response) {
+      done();
+      if(err) { return callback(err); }
+
+      var results = response.rows;
+      resultsObj = {};
+      _.forEach(results, function(result) {
+        if(result[compare] != "") {
+          var path = "['" + result[compare] + "']";
+          _.set(resultsObj, path, result["income"]);
+        }
+      })
+
+      return callback(err, resultsObj);
+    });
+  });
+}
+
+_getIncomeMedian = function(queryParams, callback) {
+  var sql = "SELECT INCOME FROM PUMS_2014_Quantiles";
+  sql = utils.appendWhereClause(sql, queryParams) + " AND QUANTILE='50';";
+
+  pg.connect(conn_options, function(err, client, done) {
+    if(err) { return callback(err); }
+
+    client.query(sql, function(err, response) {
+      done();
+      if(err) { return callback(err); }
+
+      var results = response.rows;
+      resultsObj = {};
+      _.forEach(results, function(result) {
+        resultsObj = result["income"];
+      })
+
+      return callback(err, {"overall": resultsObj});
+    });
+  });
+}
+
+module.exports.getIncomeMedian = function(event, callback) {
+
+  var queryParams = _.pick(event, ["state", "race", "sex", "agegroup", "compare"]);
+
+  utils.validateQueryParams(queryParams, function(err, validateCallback) {
+    if(err) { return callback(err); }
+
+    if(compare && compare !== "") {
+      _getCompareIncomeMedian(queryParams, callback);
+    } else {
+      delete queryParams["compare"];
+      _getIncomeMedian(queryParams, callback);
+    }
+  });
+
+}
+
+/* --------------------------------------------------------
+   income / quantiles
+   -------------------------------------------------------- */
+
 _getCompareIncomeQuantiles = function(queryParams, callback) {
   var compare = queryParams.compare;
   if(compare && compare !== "") {
@@ -79,6 +157,10 @@ module.exports.getIncomeQuantiles = function(event, callback) {
   });
 
 }
+
+/* --------------------------------------------------------
+   income / distribution
+   -------------------------------------------------------- */
 
 module.exports.getIncomeDistribution = function(event, callback) {
 
