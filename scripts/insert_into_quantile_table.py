@@ -135,8 +135,7 @@ states = [
 ]
 races = [
     # "",
-    "white", "african american", "native american",
-    "hispanic", "asian"
+    "white", "african american", "hispanic", "asian"
 ]
 sexes = [
     # "",
