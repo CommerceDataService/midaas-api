@@ -35,7 +35,7 @@ def getQuantileIncome(quantile, state, race, sex, agegroup):
     else:
         return 0
 
-def insertQuartileData(quantile, state, race, sex, agegroup):
+def insertQuantileData(quantile, state, race, sex, agegroup):
     income = getQuantileIncome(quantile, state, race, sex, agegroup)
     quantileDataList = (int(quantile * 100), "", state, race, sex, agegroup, income)
     valuesString = "(%s, '%s', '%s', '%s', '%s', '%s', %s)" % quantileDataList
@@ -149,15 +149,15 @@ agegroups = [
 
 for state in states:
     for quantile in quantiles:
-        insertQuartileData(quantile, state, "", "", "")
+        insertQuantileData(quantile, state, "", "", "")
 
 for state in states:
     for quantile in quantiles:
         for race in races:
-            insertQuartileData(quantile, state, race, "", "")
+            insertQuantileData(quantile, state, race, "", "")
         for sex in sexes:
-            insertQuartileData(quantile, state, "", sex, "")
+            insertQuantileData(quantile, state, "", sex, "")
         for agegroup in agegroups:
-            insertQuartileData(quantile, state, "", "", agegroup)
+            insertQuantileData(quantile, state, "", "", agegroup)
 
 conn.close()
