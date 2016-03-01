@@ -97,7 +97,6 @@ The two letter postal abbreviation...
 ```
 "white",
 "african american",
-"native american",
 "hispanic",
 "asian"
 ```
