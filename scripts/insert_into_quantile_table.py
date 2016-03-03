@@ -93,7 +93,7 @@ def translateRaceToQuery(race):
         return ""
     return {
         "white": "RAC1P=1 AND FHISP=0",
-        "african american": "RAC1P=2 AND FHISP=0",
+        "black": "RAC1P=2 AND FHISP=0",
         "hispanic": "FHISP=1",
         "asian": "RAC1P=6 AND FHISP=0"
     }[race]
@@ -135,7 +135,7 @@ states = [
 ]
 races = [
     # "",
-    "white", "african american", "hispanic", "asian"
+    "white", "black", "hispanic", "asian"
 ]
 sexes = [
     # "",
