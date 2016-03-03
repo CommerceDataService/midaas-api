@@ -162,4 +162,11 @@ for state in states:
         for agegroup in agegroups:
             insertQuantileData(quantile, state, "", "", agegroup)
 
+# for state in states:
+#     for quantile in quantiles:
+#         for race in races:
+#             for sex in sexes:
+#                 for agegroup in agegroups:
+#                     insertQuantileData(quantile, state, race, sex, agegroup)
+
 conn.close()
