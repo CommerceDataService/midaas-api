@@ -92,10 +92,10 @@ def translateRaceToQuery(race):
     if race is "":
         return ""
     return {
-        "white": "RAC1P=1 AND FHISP=0",
-        "black": "RAC1P=2 AND FHISP=0",
-        "hispanic": "FHISP=1",
-        "asian": "RAC1P=6 AND FHISP=0"
+        "white": "RAC1P=1 AND HISP='01'",
+        "black": "RAC1P=2 AND HISP='01'",
+        "hispanic": "NOT HISP='01'",
+        "asian": "RAC1P=6 AND HISP='01'"
     }[race]
 
 def translateSexToQuery(sex):
