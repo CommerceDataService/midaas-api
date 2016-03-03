@@ -55,12 +55,12 @@ var translateSexToQuery = function(sex) {
 
 var translateAgegroupToQuery = function(agegroup) {
   return {
-    "0-15": "AGEP <= 15",
-    "16-25": "AGEP >= 16 AND AGEP <=25",
-    "26-35": "AGEP >= 26 AND AGEP <=35",
-    "36-45": "AGEP >= 36 AND AGEP <=45",
-    "46-55": "AGEP >= 46 AND AGEP <=55",
-    "55-65": "AGEP >= 56 AND AGEP <=65",
+    // "0-17": "AGEP <= 17",
+    "18-24": "AGEP >= 18 AND AGEP <= 24",
+    "25-34": "AGEP >= 25 AND AGEP <= 34",
+    "35-44": "AGEP >= 35 AND AGEP <= 44",
+    "45-54": "AGEP >= 45 AND AGEP <= 54",
+    "55-64": "AGEP >= 55 AND AGEP <= 64",
     "65+": "AGEP >= 65"
   }[agegroup];
 };
