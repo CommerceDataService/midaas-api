@@ -31,7 +31,7 @@ def getQuantileIncome(quantile, state, race, sex, agegroup):
     if len(r) > 0:
         pernp = r[:, 0]
         pwgtp = r[:, 1]
-        return weighted.quantile(pernp, pwgtp, quantile)
+        return int(round(weighted.quantile(pernp, pwgtp, quantile),-2))
     else:
         return 0
 
