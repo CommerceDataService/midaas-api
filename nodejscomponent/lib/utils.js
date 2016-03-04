@@ -133,7 +133,8 @@ var getTranslatedWhereClause = function(queryParams) {
     translateRaceToQuery(queryParams["race"]),
     translateSexToQuery(queryParams["sex"]),
     translateAgegroupToQuery(queryParams["agegroup"]),
-    "ESR IN (1, 2, 3)"
+    "ESR IN (1, 2, 3)",
+    "AGEP >= 18"
   ];
   whereClause = _.compact(whereClause);
   return " WHERE " + whereClause.join(" AND ");

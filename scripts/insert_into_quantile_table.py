@@ -59,7 +59,8 @@ def getWhereClause(state, race, sex, agegroup):
         translateRaceToQuery(race),
         translateSexToQuery(sex),
         translateAgeToQuery(agegroup),
-        "ESR IN (1, 2, 3)"
+        "ESR IN (1, 2, 3)",
+        "AGEP >= 18"
     ]
     return "WHERE " + " AND ".join(filter(None, whereClause))
 
