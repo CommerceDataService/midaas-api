@@ -126,7 +126,7 @@ quantiles = [
 ]
 states = [
     "",
-    "AL", "AK", "AR", "AR", "CA", "CO", "CT", "DE",
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE",
     "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA",
     "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN",
     "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM",
