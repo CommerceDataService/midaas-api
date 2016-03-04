@@ -40,7 +40,12 @@ _getCompareIncomeMedian = function(queryParams, callback) {
         }
       })
 
-      return callback(err, resultsObj);
+      var resultsObjSorted = {};
+      Object.keys(resultsObj).sort().forEach(function(key) {
+        resultsObjSorted[key] = resultsObj[key];
+      });
+
+      return callback(err, resultsObjSorted);
     });
   });
 }
@@ -114,7 +119,12 @@ _getCompareIncomeQuantiles = function(queryParams, callback) {
         }
       })
 
-      return callback(err, resultsObj);
+      var resultsObjSorted = {};
+      Object.keys(resultsObj).sort().forEach(function(key) {
+        resultsObjSorted[key] = resultsObj[key];
+      });
+
+      return callback(err, resultsObjSorted);
     });
   });
 }
