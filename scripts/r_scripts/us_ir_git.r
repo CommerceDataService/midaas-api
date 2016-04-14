@@ -11,10 +11,12 @@ sc2<-read.csv(file="/Users/joshuapatterson/Desktop/csv_pus/ss14pusb.csv",head=TR
 sc <- rbind(sc1, sc2)
 ##remove all ESR except 1:3 cilvian employed, employed not at work, unemployed
 scw<-sc[sc$ESR %in% c(1,2,3),]
+##only people above 18
+scw<-scw[scw$AGEP>=18]
 
 #Creating Age Categories
-scw$agec<-0
-scw$agec[scw$AGEP>=16 & scw$AGEP <25]<-1
+
+scw$agec[scw$AGEP>=18 & scw$AGEP <25]<-1
 scw$agec[scw$AGEP>=25 & scw$AGEP <35]<-2
 scw$agec[scw$AGEP>=35 & scw$AGEP <45]<-3
 scw$agec[scw$AGEP>=45 & scw$AGEP <55]<-4
@@ -23,10 +25,10 @@ scw$agec[scw$AGEP>=65]<-6
 
 #Creating unified Race/Ethnicity
 scw$race<-0  #Other
-scw$race[scw$RAC1P==1 & scw$FHISP==0]<-1 #White
-scw$race[scw$RAC1P==2 & scw$FHISP==0]<-2 #Black
-scw$race[scw$FHISP==1]<-3 #Hispanic
-scw$race[scw$RAC1P==6 & scw$FHISP==0]<-4 #Asian
+scw$race[scw$RAC1P==1 & scw$HISP==1]<-1 #White
+scw$race[scw$RAC1P==2 & scw$HISP==1]<-2 #Black
+scw$race[scw$HISP!=1]<-3 #Hispanic
+scw$race[scw$RAC1P==6 & scw$HISP==1]<-4 #Asian
 
 #Create income ranges
 scw$ir<-0
