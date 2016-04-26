@@ -7,7 +7,7 @@ var medianController = require('./controllers/median');
 
 router.get('/distribution', distributionController.process);
 
-router.get('/quantiles', quantilesController.process);
+router.get('/quantiles', quantileController.process);
 
 router.get('/median', medianController.process);
 
