@@ -4,10 +4,11 @@ import numpy
 import weighted
 
 # with open("./local-config.json") as rdsConfigFile:
-with open("./redshift-config.json") as rdsConfigFile:
+with open("../pg-config.json") as rdsConfigFile:
     config = json.load(rdsConfigFile)
 
-conn = psycopg2.connect(host=config["host"], user=config["user"], password=config["password"], dbname=config["database"], port=config["port"])
+conn = psycopg2.connect(host=config["host"], password=config["password"], user=config["user"], database=config["database"], port=config["port"])
+
 cursor = conn.cursor()
 
 def getQuantileIncome(quantile, state, race, sex, agegroup):
@@ -41,17 +42,17 @@ def insertQuantileData(quantile, state, race, sex, agegroup):
     valuesString = "(%s, '%s', '%s', '%s', '%s', '%s', %s)" % quantileDataList
     command = """
         INSERT INTO
-            PUMS_2014_Quantiles(QUANTILE, PUMA, STATE, RACE, SEX, AGEGROUP, INCOME)
+            PUMS_2014_Quantiles (QUANTILE, PUMA, STATE, RACE, SEX, AGEGROUP, INCOME)
         VALUES
     """
     command += valuesString
     try:
-       cursor.execute(command)
-       conn.commit()
-       print "committed %s" % (valuesString)
+        cursor.execute(command)
+        conn.commit()
+        print ("committed %s" % (valuesString))
     except:
        # Rollback in case there is any error
-       conn.rollback()
+        conn.rollback()
 
 def getWhereClause(state, race, sex, agegroup):
     whereClause = [
