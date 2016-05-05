@@ -6,7 +6,7 @@ var utils = require('../utils');
 
 var distributionController = {
   process: function(req, res, next){
-    var queryParams = _.pick(req.params, ["state", "race", "sex", "agegroup"]);
+    var queryParams = _.pick(req.query, ["state", "race", "sex", "agegroup"]);
 
     utils.validateQueryParams(queryParams, function(err, validateCallback) {
       if(err) { return next(err); }

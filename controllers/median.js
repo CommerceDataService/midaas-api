@@ -1,12 +1,11 @@
 var _       = require("lodash");
 var pg      = require("pg");
 var utils = require('../utils');
-// var conn_options = require("./redshift-config.json");
+var conn_options = require("../pg-config.json");
 
 var medianController = {
   process: function(req, res, next){
-    var queryParams = _.pick(req.params, ["state", "race", "sex", "agegroup", "compare"]);
-
+    var queryParams = _.pick(req.query, ["state", "race", "sex", "agegroup", "compare"]);
     utils.validateQueryParams(queryParams, function(err, validateCallback) {
       if(err) { return next(err); }
 
@@ -23,21 +22,22 @@ var medianController = {
   getIncomeMedian: function(queryParams, res, next){
     var sql = "SELECT INCOME FROM PUMS_2014_Quantiles";
     sql = utils.appendWhereClause(sql, queryParams) + " AND QUANTILE='50';";
+    console.log(sql)
 
     pg.connect(conn_options, function(err, client, done) {
-      if(err) { return callback(err); }
+      if(err) {return next(err); }
 
       client.query(sql, function(err, response) {
         done();
-        if(err) { return callback(err); }
+        if(err) { console.log(err); return next(err); }
 
         var results = response.rows;
         resultsObj = {};
         _.forEach(results, function(result) {
           resultsObj = result["income"];
         })
-
-        return next(err, {"overall": resultsObj});
+        res.json({"overall": resultsObj})
+        // return next(err, {"overall": resultsObj});
       });
     });
   },

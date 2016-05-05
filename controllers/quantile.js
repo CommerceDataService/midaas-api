@@ -1,20 +1,20 @@
 var _       = require("lodash");
 var pg      = require("pg");
 var utils = require('../utils');
-// var conn_options = require("./redshift-config.json");
+var conn_options = require("../pg-config.json");
 
 var quantileController = {
   process: function(req, res, next){
-    var queryParams = _.pick(event, ["state", "race", "sex", "agegroup", "quantile", "compare"]);
+    var queryParams = _.pick(req.query, ["state", "race", "sex", "agegroup", "quantile", "compare"]);
 
     utils.validateQueryParams(queryParams, function(err, validateCallback) {
       if(err) { return next(err); }
 
       if(compare && compare !== "") {
-        _getCompareIncomeQuantiles(queryParams, callback);
+        quantileController.getCompareIncomeQuantiles(queryParams, res, next);
       } else {
         delete queryParams["compare"];
-        _getIncomeQuantiles(queryParams, callback);
+        quantileController.getIncomeQuantiles(queryParams, res, next);
       }
     });
 
