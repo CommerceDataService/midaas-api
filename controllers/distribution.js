@@ -1,7 +1,7 @@
 var _       = require("lodash");
 var pg      = require("pg");
 var utils = require('../utils');
-// var conn_options = require("./redshift-config.json");
+var conn_options = require("./rds-config.json");
 
 
 var distributionController = {
