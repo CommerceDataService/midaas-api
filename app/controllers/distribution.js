@@ -49,6 +49,6 @@ var distributionController = {
       });
     });
   }
-}
+};
 
-module.exports = distributionController
+module.exports = distributionController;

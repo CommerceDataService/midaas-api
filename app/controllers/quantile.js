@@ -35,8 +35,8 @@ var quantileController = {
         resultsObj = {};
         _.forEach(results, function(result) {
           resultsObj[result["quantile"] + "%"] = result["income"];
-        })
-        res.json({"overall": resultsObj})
+        });
+        res.json({"overall": resultsObj});
         // return next(err, {"overall": resultsObj});
       });
     });
@@ -62,11 +62,11 @@ var quantileController = {
         var results = response.rows;
         resultsObj = {};
         _.forEach(results, function(result) {
-          if(result[compare] != "") {
+          if(result[compare] !== "") {
             var path = "['" + result[compare] + "']" + "['" + result["quantile"] + "%']";
             _.set(resultsObj, path, result["income"]);
           }
-        })
+        });
 
         var resultsObjSorted = {};
         Object.keys(resultsObj).sort().forEach(function(key) {
@@ -77,6 +77,6 @@ var quantileController = {
       });
     });
   }
-}
+};
 
-module.exports = quantileController
+module.exports = quantileController;

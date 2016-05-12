@@ -22,7 +22,6 @@ var medianController = {
   getIncomeMedian: function(queryParams, res, next){
     var sql = "SELECT INCOME FROM PUMS_2014_Quantiles";
     sql = utils.appendWhereClause(sql, queryParams) + " AND QUANTILE='50';";
-    console.log(sql)
 
     pg.connect(conn_options, function(err, client, done) {
       if(err) {return next(err); }
@@ -35,8 +34,8 @@ var medianController = {
         resultsObj = {};
         _.forEach(results, function(result) {
           resultsObj = result["income"];
-        })
-        res.json({"overall": resultsObj})
+        });
+        res.json({"overall": resultsObj});
         // return next(err, {"overall": resultsObj});
       });
     });
@@ -62,7 +61,7 @@ var medianController = {
         var results = response.rows;
         resultsObj = {};
         _.forEach(results, function(result) {
-          if(result[compare] != "") {
+          if(result[compare] !== "") {
             var path = "['" + result[compare] + "']";
             _.set(resultsObj, path, result["income"]);
           }
@@ -77,6 +76,6 @@ var medianController = {
       });
     });
   }
-}
+};
 
-module.exports = medianController
+module.exports = medianController;
