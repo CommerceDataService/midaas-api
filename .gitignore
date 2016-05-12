@@ -44,3 +44,4 @@ _meta
 rds-config.json
 redshift-config.json
 local-config.json
+s3-config.json

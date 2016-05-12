@@ -1,7 +1,7 @@
 var _       = require("lodash");
 var pg      = require("pg");
 var utils = require('../utils');
-var conn_options = require("./rds-config.json");
+var conn_options = require("../../scripts/redshift-config.json");
 
 
 var distributionController = {
@@ -44,8 +44,8 @@ var distributionController = {
           // key = result["bucket"];
           resultsObj[key] = parseInt(result["count"])/total;
         });
-
-        return next(err, resultsObj);
+        res.json(resultsObj);
+        // return next(err, resultsObj);
       });
     });
   }

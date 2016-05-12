@@ -1,38 +1,40 @@
 var _       = require("lodash");
 var pg      = require("pg");
 var utils = require('../utils');
-var conn_options = require("../scripts/redshift-config.json");
+var conn_options = require("../../scripts/redshift-config.json");
 
-var medianController = {
+var quantileController = {
   process: function(req, res, next){
-    var queryParams = _.pick(req.query, ["state", "race", "sex", "agegroup", "compare"]);
+    var queryParams = _.pick(req.query, ["state", "race", "sex", "agegroup", "quantile", "compare"]);
+
     utils.validateQueryParams(queryParams, function(err, validateCallback) {
       if(err) { return next(err); }
 
       if(compare && compare !== "") {
-        medianController.getCompareIncomeMedian(queryParams, res, next);
+        quantileController.getCompareIncomeQuantiles(queryParams, res, next);
       } else {
         delete queryParams["compare"];
-        medianController.getIncomeMedian(queryParams, res, next);
+        quantileController.getIncomeQuantiles(queryParams, res, next);
       }
     });
+
   },
 
-  getIncomeMedian: function(queryParams, res, next){
-    var sql = "SELECT INCOME FROM PUMS_2014_Quantiles";
-    sql = utils.appendWhereClause(sql, queryParams) + " AND QUANTILE='50';";
+  getIncomeQuantiles: function(queryParams, res, next){
+    var sql = "SELECT QUANTILE, INCOME FROM PUMS_2014_Quantiles";
+    sql = utils.appendWhereClause(sql, queryParams) + " ORDER BY QUANTILE::INT ASC;";
 
     pg.connect(conn_options, function(err, client, done) {
-      if(err) {return next(err); }
+      if(err) { return next(err); }
 
       client.query(sql, function(err, response) {
         done();
-        if(err) { console.log(err); return next(err); }
+        if(err) { return next(err); }
 
         var results = response.rows;
         resultsObj = {};
         _.forEach(results, function(result) {
-          resultsObj = result["income"];
+          resultsObj[result["quantile"] + "%"] = result["income"];
         })
         res.json({"overall": resultsObj})
         // return next(err, {"overall": resultsObj});
@@ -47,8 +49,8 @@ var medianController = {
     }
     delete queryParams["compare"];
 
-    var sql = "SELECT INCOME, " + compare + " FROM PUMS_2014_Quantiles";
-    sql = utils.appendWhereClause(sql, queryParams) + " AND QUANTILE='50';";
+    var sql = "SELECT QUANTILE, INCOME, " + compare + " FROM PUMS_2014_Quantiles";
+    sql = utils.appendWhereClause(sql, queryParams) + " ORDER BY QUANTILE::INT ASC;";
 
     pg.connect(conn_options, function(err, client, done) {
       if(err) { return next(err); }
@@ -61,10 +63,10 @@ var medianController = {
         resultsObj = {};
         _.forEach(results, function(result) {
           if(result[compare] != "") {
-            var path = "['" + result[compare] + "']";
+            var path = "['" + result[compare] + "']" + "['" + result["quantile"] + "%']";
             _.set(resultsObj, path, result["income"]);
           }
-        });
+        })
 
         var resultsObjSorted = {};
         Object.keys(resultsObj).sort().forEach(function(key) {
@@ -77,4 +79,4 @@ var medianController = {
   }
 }
 
-module.exports = medianController
+module.exports = quantileController

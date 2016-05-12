@@ -4,7 +4,7 @@ import numpy
 import weighted
 
 # with open("./local-config.json") as rdsConfigFile:
-with open("../pg-config.json") as rdsConfigFile:
+with open("./redshift-config.json") as rdsConfigFile:
     config = json.load(rdsConfigFile)
 
 conn = psycopg2.connect(host=config["host"], password=config["password"], user=config["user"], database=config["database"], port=config["port"])
