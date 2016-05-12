@@ -4,8 +4,8 @@ var router = require('./routes');
 
 var app = express();
 
-app.listen(4000, function(){
-  console.log("app listening on port 4000");
+app.listen(8080, function(){
+  console.log("app listening on port 8080");
 });
 
 app.use('/income', router);
