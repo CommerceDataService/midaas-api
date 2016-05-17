@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/noonkay/midaas-api#readme",
   "dependencies": {
+    "cors": "^2.7.1",
     "express": "^4.13.4",
     "lodash": "^4.11.1",
     "numeraljs": "^1.5.6",
