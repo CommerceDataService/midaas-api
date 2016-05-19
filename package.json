@@ -1,16 +1,26 @@
 {
   "name": "midaas-api",
-  "version": "0.0.1",
-  "description": "A Serverless Project and its Serverless Plugin dependencies.",
-  "author": "me",
-  "license": "MIT",
-  "private": false,
+  "version": "1.0.0",
+  "description": "Midaas API Express App",
+  "main": "app/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/presidential-innovation-fellows/midaas-api.git"
+    "url": "git+https://github.com/noonkay/midaas-api.git"
   },
+  "author": "Negar Kalbasi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/noonkay/midaas-api/issues"
+  },
+  "homepage": "https://github.com/noonkay/midaas-api#readme",
   "dependencies": {
-    "serverless-cors-plugin": "^0.2.1",
-    "serverless-serve": "^1.3.0"
+    "cors": "^2.7.1",
+    "express": "^4.13.4",
+    "lodash": "^4.11.1",
+    "numeraljs": "^1.5.6",
+    "pg": "^4.5.3"
   }
 }
