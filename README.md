@@ -9,7 +9,7 @@ This project uses an Express.js application and an AWS Redshift database.
 ## API documentation
 
 ### API key
-To use the MIDAAS API, request a unique API key from [api.data.gov](https://api.data.gov/signup/)
+To use the MIDAAS API, request a unique API key from [api.data.gov](https://api.data.gov/signup/) and use it for the required `api_key` variable below. 
 
 ### [GET] /quantiles
 **query params**:  state, race, sex, agegroup _(see below for options)_<br>
@@ -112,7 +112,7 @@ The two letter postal abbreviation...
 #### agegroup
 
 ```
-18-24",
+"18-24",
 "25-34",
 "35-44",
 "45-54",
