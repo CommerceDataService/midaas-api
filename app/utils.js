@@ -74,37 +74,53 @@ var translateQuantileToQuery = function(quantile) {
   }
 };
 
+var translateYearToQuery = function(year){
+  intYear = parseInt(year);
+  yearsArray = [2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014];
+  if(_.includes(yearsArray, intYear)){
+    return table = {quantiles: "PUMS_"+intYear+"_Quantiles",
+                    persons: "PUMS_"+intYear+"_Persons"};
+  } else {
+    return undefined;
+  }
+};
+
 var validateQueryParams = function(queryParams, callback) {
   // return an error callback if we encounter any issues
   state = queryParams["state"];
   if(state && !translateStateToQuery(state)) {
     return callback(new Error("Invalid value (" + state + ") supplied for state. " +
-      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+      "Please see https://midaas.commerce.gov/developers/ for documentation."));
   }
   race = queryParams["race"];
   if(race && !translateRaceToQuery(race)) {
     return callback(new Error("Invalid value (" + race + ") supplied for race. " +
-      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+      "Please see https://midaas.commerce.gov/developers/ for documentation."));
   }
   sex = queryParams["sex"];
   if(sex && !translateSexToQuery(sex)) {
     return callback(new Error("Invalid value (" + sex + ") supplied for sex. " +
-      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+      "Please see https://midaas.commerce.gov/developers/ for documentation."));
   }
   agegroup = queryParams["agegroup"];
   if(agegroup && !translateAgegroupToQuery(agegroup)) {
     return callback(new Error("Invalid value (" + agegroup + ") supplied for agegroup. " +
-      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+      "Please see https://midaas.commerce.gov/developers/ for documentation."));
   }
   quantile = queryParams["quantile"];
   if(quantile && !translateQuantileToQuery(quantile)) {
     return callback(new Error("Invalid value (" + quantile + ") supplied for quantile. " +
-      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+      "Please see https://midaas.commerce.gov/developers/ for documentation."));
   }
   compare = queryParams["compare"];
   if(compare && !_.includes(["state", "race", "sex", "agegroup"], compare)) {
     return callback(new Error("Invalid value (" + compare + ") supplied for compare. " +
-      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+      "Please see https://midaas.commerce.gov/developers/ for documentation."));
+  }
+  year = queryParams["year"];
+  if(year && !translateYearToQuery(year)){
+    return callback(new Error("Invalid value(" + year +") supplied for year. " +
+    "Please see https://midaas.commerce.gov/developers/ for documentation."))
   }
   // return successfully if we haven't
   return callback();
@@ -115,7 +131,9 @@ var appendWhereClause = function(sql, queryParams) {
   // of parameters that we aren't querying on
   // console.log(queryParams);
   if(!_.isEmpty(queryParams)) {
+    sql += translateYearToQuery(queryParams["year"]).quantiles;
     sql += " WHERE ";
+    delete queryParams["year"];
     sqlWhere = [];
     _.forOwn(queryParams, function(value, key) {
       if (!(key.toLowerCase() === "quantile" && value === "")) {
@@ -141,6 +159,8 @@ var getTranslatedWhereClause = function(queryParams) {
 };
 
 var appendTranslatedWhereClause = function(sql, queryParams) {
+  sql += translateYearToQuery(queryParams["year"]).persons;
+  delete queryParams["year"];
   // console.log(queryParams);
   if(!_.isEmpty(queryParams)) {
     sql += getTranslatedWhereClause(queryParams);
