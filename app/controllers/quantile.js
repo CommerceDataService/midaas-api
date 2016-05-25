@@ -5,7 +5,7 @@ var conn_options = require("../../scripts/redshift-config.json");
 
 var quantileController = {
   process: function(req, res, next){
-    var queryParams = _.pick(req.query, ["state", "race", "sex", "agegroup", "quantile", "compare"]);
+    var queryParams = _.pick(req.query, ["state", "race", "sex", "agegroup", "quantile", "compare", "year"]);
 
     utils.validateQueryParams(queryParams, function(err, validateCallback) {
       if(err) { return next(err); }
@@ -27,7 +27,7 @@ var quantileController = {
     }
     delete queryParams["compare"];
 
-    var sql = "SELECT QUANTILE, INCOME, " + compare + " FROM PUMS_2014_Quantiles";
+    var sql = "SELECT QUANTILE, INCOME, " + compare + " FROM ";
     sql = utils.appendWhereClause(sql, queryParams) + " ORDER BY QUANTILE::INT ASC;";
     pg.connect(conn_options, function(err, client, next) {
       if(err) { return next(err); }
@@ -56,7 +56,7 @@ var quantileController = {
   },
 
   getIncomeQuantiles: function(queryParams, res, next){
-    var sql = "SELECT QUANTILE, INCOME FROM PUMS_2014_Quantiles";
+    var sql = "SELECT QUANTILE, INCOME FROM ";
     sql = utils.appendWhereClause(sql, queryParams) + " ORDER BY QUANTILE::INT ASC;";
 
     pg.connect(conn_options, function(err, client, next) {
@@ -84,7 +84,7 @@ var quantileController = {
     }
     delete queryParams["compare"];
 
-    var sql = "SELECT QUANTILE, INCOME, " + compare + " FROM PUMS_2014_Quantiles";
+    var sql = "SELECT QUANTILE, INCOME, " + compare + " FROM ";
     sql = utils.appendWhereClause(sql, queryParams) + " ORDER BY QUANTILE::INT ASC;";
 
     pg.connect(conn_options, function(err, client, done) {
