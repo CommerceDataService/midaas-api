@@ -75,11 +75,15 @@ var translateQuantileToQuery = function(quantile) {
 };
 
 var translateYearToQuery = function(year){
-  intYear = parseInt(year);
   yearsArray = [2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014];
-  if(_.includes(yearsArray, intYear)){
-    return table = {quantiles: "PUMS_"+intYear+"_Quantiles",
-                    persons: "PUMS_"+intYear+"_Persons"};
+  if (year == 'current'){
+    year = _.max(yearsArray)
+  }else {
+    year = parseInt(year);
+  }
+  if(_.includes(yearsArray, year)){
+    return table = {quantiles: "PUMS_"+year+"_Quantiles",
+                    persons: "PUMS_"+year+"_Persons"};
   } else {
     return undefined;
   }

@@ -6,6 +6,9 @@ var conn_options = require("../../scripts/redshift-config.json");
 var medianController = {
   process: function(req, res, next){
     var queryParams = _.pick(req.query, ["state", "race", "sex", "agegroup", "compare", "year"]);
+    if (!queryParams["year"]){
+      queryParams["year"] = 'current';
+    }
     utils.validateQueryParams(queryParams, function(err, validateCallback) {
       if(err) { return next(err); }
 

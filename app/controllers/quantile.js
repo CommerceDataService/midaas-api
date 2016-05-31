@@ -6,7 +6,9 @@ var conn_options = require("../../scripts/redshift-config.json");
 var quantileController = {
   process: function(req, res, next){
     var queryParams = _.pick(req.query, ["state", "race", "sex", "agegroup", "quantile", "compare", "year"]);
-
+    if (!queryParams["year"]){
+      queryParams["year"] = 'current';
+    }
     utils.validateQueryParams(queryParams, function(err, validateCallback) {
       if(err) { return next(err); }
 

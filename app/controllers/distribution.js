@@ -7,7 +7,9 @@ var conn_options = require("../../scripts/redshift-config.json");
 var distributionController = {
   process: function(req, res, next){
     var queryParams = _.pick(req.query, ["state", "race", "sex", "agegroup", "year"]);
-
+    if (!queryParams["year"]){
+      queryParams["year"] = 'current';
+    }
     utils.validateQueryParams(queryParams, function(err, validateCallback) {
       if(err) { return next(err); }
       distributionController.getIncomeDistribution(queryParams, res, next);
