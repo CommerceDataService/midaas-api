@@ -4,7 +4,7 @@
   "description": "Midaas API Express App",
   "main": "app/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -25,5 +25,13 @@
     "lodash": "^4.11.1",
     "numeraljs": "^1.5.6",
     "pg": "^4.5.3"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-sorted": "^0.1.0",
+    "mocha": "^2.5.3",
+    "supertest": "^1.2.0",
+    "tap-prettify": "0.0.2",
+    "tape": "^4.5.1"
   }
 }
