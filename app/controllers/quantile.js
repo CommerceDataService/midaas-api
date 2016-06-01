@@ -28,7 +28,7 @@ var quantileController = {
     delete queryParams["compare"];
 
     var sql = "SELECT QUANTILE, INCOME, " + compare + " FROM PUMS_2014_Quantiles";
-    sql = utils.appendWhereClause(sql, queryParams) + " ORDER BY QUANTILE::INT ASC;";
+    sql = utils.appendCompareWhereClause(sql, queryParams) + " ORDER BY QUANTILE::INT ASC;";
     pg.connect(conn_options, function(err, client, next) {
       if(err) { return next(err); }
 
