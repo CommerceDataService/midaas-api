@@ -111,19 +111,25 @@ var validateQueryParams = function(queryParams, callback) {
 }
 
 var appendWhereClause = function(sql, queryParams) {
-  // NOTE: need to query with "" (empty strings to be inclusive)
-  // of parameters that we aren't querying on
-  // console.log(queryParams);
-  if(!_.isEmpty(queryParams)) {
-    sql += " WHERE ";
-    sqlWhere = [];
-    _.forOwn(queryParams, function(value, key) {
-      if (!(key.toLowerCase() === "quantile" && value === "")) {
-        sqlWhere.push(key + "='" + value + "'");
-      }
-    });
-    sql += sqlWhere.join(" AND ");
-  }
+  var defaultParams = {
+    'state': '',
+    'sex': '',
+    'agegroup': '',
+    'race': ''
+  };
+  sql += " WHERE ";
+  sqlWhere = [];
+  _.forOwn(queryParams, function(value, key) {
+    if (!(key.toLowerCase() === "quantile" && value === "")) {
+      defaultParams= _.omit(defaultParams, [key]);
+      sqlWhere.push(key + "='" + value + "'");
+    }
+  });
+  _.forOwn(defaultParams, function(value, key){
+      sqlWhere.push(key + "='" + value + "'");
+  })
+  sql += sqlWhere.join(" AND ");
+
   return sql;
 };
 
