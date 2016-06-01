@@ -15,10 +15,6 @@ var app = express();
 app.use(helmet());
 app.use(auth);
 
-// authentication middleware
-
-app.listen((process.env.MIDAAS_API_PORT || 8080), function(){
-  console.log("app listening on port " + (process.env.MIDAAS_API_PORT || 8080));
-});
-
 app.use('/income', router);
+
+module.exports = app;
