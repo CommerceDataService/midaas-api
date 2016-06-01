@@ -133,6 +133,19 @@ var appendWhereClause = function(sql, queryParams) {
   return sql;
 };
 
+var appendCompareWhereClause = function(sql, queryParams) {
+  if(!_.isEmpty(queryParams)) {
+    sql += " WHERE ";
+    sqlWhere = [];
+    _.forOwn(queryParams, function(value, key) {
+      if (!(key.toLowerCase() === "quantile" && value === "")) {
+        sqlWhere.push(key + "='" + value + "'");
+      }
+    });
+    sql += sqlWhere.join(" AND ");
+  }
+  return sql;
+};
 var getTranslatedWhereClause = function(queryParams) {
   var whereClause = [
     translateStateToQuery(queryParams["state"]),
@@ -163,6 +176,7 @@ var formatIncome = function(income) {
  ***************************************************************/
 
 module.exports.appendWhereClause = appendWhereClause;
+module.exports.appendCompareWhereClause = appendCompareWhereClause;
 module.exports.appendTranslatedWhereClause = appendTranslatedWhereClause;
 module.exports.validateQueryParams = validateQueryParams;
 module.exports.formatIncome = formatIncome;
