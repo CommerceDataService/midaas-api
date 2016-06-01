@@ -11,6 +11,7 @@ chai.use(require('chai-sorted'));
 describe('income', function() {
     describe('quantiles', function() {
         it('should have ascending values sorted in the same direction as the quantiles', function(done) {
+          this.timeout(10000);
           process.env.MIDAAS_API_PORT = 9999;
           process.env.MIDAAS_API_USERNAME = 'foo';
           process.env.MIDAAS_API_PASSWORD = 'bar';
@@ -24,6 +25,9 @@ describe('income', function() {
               // pull just the values (income) from the quantiles
               var vals = _.map(quantiles, function(o) { return o[1]; });
               var vals_srt = _.chain(vals).clone().sortBy().value();
+
+              // make sure some results came back
+              expect(vals).to.have.length.above(5);
 
               expect(vals).to.deep.equal(vals_srt);
 
