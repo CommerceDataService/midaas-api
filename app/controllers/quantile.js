@@ -29,6 +29,7 @@ var quantileController = {
 
     var sql = "SELECT QUANTILE, INCOME, " + compare + " FROM PUMS_2014_Quantiles";
     sql = utils.appendWhereClause(sql, queryParams, compare) + " ORDER BY QUANTILE::INT ASC;";
+console.log(sql)
     pg.connect(conn_options, function(err, client, next) {
       if(err) { return next(err); }
 
@@ -58,7 +59,7 @@ var quantileController = {
   getIncomeQuantiles: function(queryParams, res, next){
     var sql = "SELECT QUANTILE, INCOME FROM PUMS_2014_Quantiles";
     sql = utils.appendWhereClause(sql, queryParams) + " ORDER BY QUANTILE::INT ASC;";
-
+    // return sql;
     pg.connect(conn_options, function(err, client, next) {
       if(err) { return next(err); }
 
