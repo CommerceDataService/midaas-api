@@ -3,7 +3,6 @@ var pg = require('pg');
 var router = require('./routes');
 var basic_auth = require('basic-auth');
 var auth = require('./auth');
-var process = require('process');
 var helmet = require('helmet');
 var path = require('path');
 
