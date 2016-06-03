@@ -55,7 +55,6 @@ var translateSexToQuery = function(sex) {
 
 var translateAgegroupToQuery = function(agegroup) {
   return {
-    // "0-17": "AGEP <= 17",
     "18-24": "AGEP >= 18 AND AGEP <= 24",
     "25-34": "AGEP >= 25 AND AGEP <= 34",
     "35-44": "AGEP >= 35 AND AGEP <= 44",
@@ -128,24 +127,30 @@ var validateQueryParams = function(queryParams, callback) {
   }
   // return successfully if we haven't
   return callback();
-}
+};
 
-var appendWhereClause = function(sql, queryParams) {
-  // NOTE: need to query with "" (empty strings to be inclusive)
-  // of parameters that we aren't querying on
-  // console.log(queryParams);
-  if(!_.isEmpty(queryParams)) {
-    sql += translateYearToQuery(queryParams["year"]).quantiles;
-    sql += " WHERE ";
-    delete queryParams["year"];
-    sqlWhere = [];
-    _.forOwn(queryParams, function(value, key) {
-      if (!(key.toLowerCase() === "quantile" && value === "")) {
-        sqlWhere.push(key + "='" + value + "'");
-      }
-    });
-    sql += sqlWhere.join(" AND ");
-  }
+var appendWhereClause = function(sql, queryParams, compare) {
+  sql += translateYearToQuery(queryParams["year"]).quantiles;
+  delete queryParams["year"];
+  var defaultParams = {
+    'state': '',
+    'sex': '',
+    'agegroup': '',
+    'race': ''
+  };
+  sql += " WHERE ";
+  sqlWhere = [];
+  defaultParams = _.omit(defaultParams, [compare])
+  _.forOwn(queryParams, function(value, key) {
+    if (!(key.toLowerCase() === "quantile" && value === "")) {
+      defaultParams= _.omit(defaultParams, [key]);
+      sqlWhere.push(key + "='" + value + "'");
+    }
+  });
+  _.forOwn(defaultParams, function(value, key){
+      sqlWhere.push(key + "='" + value + "'");
+  })
+  sql += sqlWhere.join(" AND ");
   return sql;
 };
 
@@ -165,7 +170,6 @@ var getTranslatedWhereClause = function(queryParams) {
 var appendTranslatedWhereClause = function(sql, queryParams) {
   sql += translateYearToQuery(queryParams["year"]).persons;
   delete queryParams["year"];
-  // console.log(queryParams);
   if(!_.isEmpty(queryParams)) {
     sql += getTranslatedWhereClause(queryParams);
   }
