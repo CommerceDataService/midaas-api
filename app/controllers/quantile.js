@@ -11,24 +11,32 @@ var quantileController = {
       if(err) { return next(err); }
 
       if(compare && compare !== "") {
-        quantileController.getCompareIncomeQuantiles(queryParams, res, next);
+        var sql = quantileController.buildSQL(queryParams);
+        quantileController.getCompareIncomeQuantiles(sql, res, next);
       } else {
-        delete queryParams["compare"];
-        quantileController.getIncomeQuantiles(queryParams, res, next);
+        var sql = quantileController.buildSQL(queryParams);
+        quantileController.getIncomeQuantiles(sql, res, next);
       }
     });
 
   },
-
-  getCompareIncomeQuantiles: function(queryParams, res, next) {
+  buildSQL: function(queryParams){
     var compare = queryParams.compare;
     if(compare && compare !== "") {
       delete queryParams[compare];
-    }
-    delete queryParams["compare"];
+      delete queryParams["compare"];
+      var sql = "SELECT QUANTILE, INCOME, " + compare + " FROM PUMS_2014_Quantiles";
+      sql = utils.appendWhereClause(sql, queryParams, compare) + " ORDER BY QUANTILE::INT ASC;";
+      return sql;
+    } else {
+      delete queryParams["compare"];
+      var sql = "SELECT QUANTILE, INCOME FROM PUMS_2014_Quantiles";
+      sql = utils.appendWhereClause(sql, queryParams) + " ORDER BY QUANTILE::INT ASC;";
+      return sql;
+        }
+  },
 
-    var sql = "SELECT QUANTILE, INCOME, " + compare + " FROM PUMS_2014_Quantiles";
-    sql = utils.appendWhereClause(sql, queryParams, compare) + " ORDER BY QUANTILE::INT ASC;";
+  getCompareIncomeQuantiles: function(sql, res, next) {
     pg.connect(conn_options, function(err, client, next) {
       if(err) { return next(err); }
 
@@ -43,7 +51,7 @@ var quantileController = {
             var path = "['" + result[compare] + "']" + "['" + result["quantile"] + "%']";
             _.set(resultsObj, path, result["income"]);
           }
-        })
+        });
 
         var resultsObjSorted = {};
         Object.keys(resultsObj).sort().forEach(function(key) {
@@ -55,10 +63,7 @@ var quantileController = {
     });
   },
 
-  getIncomeQuantiles: function(queryParams, res, next){
-    var sql = "SELECT QUANTILE, INCOME FROM PUMS_2014_Quantiles";
-    sql = utils.appendWhereClause(sql, queryParams) + " ORDER BY QUANTILE::INT ASC;";
-
+  getIncomeQuantiles: function(sql, res, next){
     pg.connect(conn_options, function(err, client, next) {
       if(err) { return next(err); }
 
@@ -72,7 +77,6 @@ var quantileController = {
           resultsObj[result["quantile"] + "%"] = result["income"];
         });
         res.json({"overall": resultsObj});
-        // return next(err, {"overall": resultsObj});
       });
     });
   },
