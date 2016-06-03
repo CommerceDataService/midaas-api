@@ -37,14 +37,6 @@ var quantileController = {
   },
 
   getCompareIncomeQuantiles: function(sql, res, next) {
-    // var compare = queryParams.compare;
-    // if(compare && compare !== "") {
-    //   delete queryParams[compare];
-    // }
-    // delete queryParams["compare"];
-    //
-    // var sql = "SELECT QUANTILE, INCOME, " + compare + " FROM PUMS_2014_Quantiles";
-    // sql = utils.appendWhereClause(sql, queryParams, compare) + " ORDER BY QUANTILE::INT ASC;";
     pg.connect(conn_options, function(err, client, next) {
       if(err) { return next(err); }
 
@@ -59,7 +51,7 @@ var quantileController = {
             var path = "['" + result[compare] + "']" + "['" + result["quantile"] + "%']";
             _.set(resultsObj, path, result["income"]);
           }
-        })
+        });
 
         var resultsObjSorted = {};
         Object.keys(resultsObj).sort().forEach(function(key) {
@@ -72,9 +64,6 @@ var quantileController = {
   },
 
   getIncomeQuantiles: function(sql, res, next){
-    // var sql = "SELECT QUANTILE, INCOME FROM PUMS_2014_Quantiles";
-    // sql = utils.appendWhereClause(sql, queryParams) + " ORDER BY QUANTILE::INT ASC;";
-    // return sql;
     pg.connect(conn_options, function(err, client, next) {
       if(err) { return next(err); }
 
@@ -88,7 +77,6 @@ var quantileController = {
           resultsObj[result["quantile"] + "%"] = result["income"];
         });
         res.json({"overall": resultsObj});
-        // return next(err, {"overall": resultsObj});
       });
     });
   },
