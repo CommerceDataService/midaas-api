@@ -74,32 +74,32 @@ describe('income', function() {
 });
 
 describe('queryBuilding', function(){
-  xit('should generate the correct sql statement for query on quantiles without any params', function(done){
+  it('should generate the correct sql statement for query on quantiles without any params', function(done){
     var query = {};
     var statement = "SELECT QUANTILE, INCOME FROM PUMS_2014_Quantiles WHERE state='' AND sex='' AND agegroup='' AND race='' ORDER BY QUANTILE::INT ASC;";
-    var generated = quantileController.getIncomeQuantiles(query);
+    var generated = quantileController.buildSQL(query);
     expect(generated).to.equal(statement);
     done()
   });
 
-  xit('should generate the correct sql statement for query on quantiles with some params', function(done){
+  it('should generate the correct sql statement for query on quantiles with some params', function(done){
     var query = {
       sex: 'female',
       race: 'black'
     };
     var statement = "SELECT QUANTILE, INCOME FROM PUMS_2014_Quantiles WHERE sex='female' AND race='black' AND state='' AND agegroup='' ORDER BY QUANTILE::INT ASC;";
-    var generated = quantileController.getIncomeQuantiles(query);
+    var generated = quantileController.buildSQL(query);
     expect(generated).to.equal(statement);
     done()
   });
 
-  xit('should generate the correct sql statement for query on quantiles with a compare param', function(done){
+  it('should generate the correct sql statement for query on quantiles with a compare param', function(done){
     var query ={
       compare: 'race',
       state: 'CA'
     };
     var statement = "SELECT QUANTILE, INCOME, race FROM PUMS_2014_Quantiles WHERE state='CA' AND sex='' AND agegroup='' ORDER BY QUANTILE::INT ASC;";
-    var generated = quantileController.getCompareIncomeQuantiles(query);
+    var generated = quantileController.buildSQL(query);
     expect(generated).to.equal(statement);
     done();
   });
