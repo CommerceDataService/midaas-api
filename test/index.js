@@ -5,13 +5,14 @@ var chai = require('chai'),
   expect = chai.expect;
 var _ = require('lodash');
 var util = require('util');
-var quantileController = require('../app/controllers/quantile')
+var quantileController = require('../app/controllers/quantile');
 
-chai.use(require('chai-sorted'));
 
 describe('income', function() {
     describe('quantiles', function() {
-        it('should have ascending values sorted in the same direction as the quantiles', function(done) {
+        // this test will be skipped on the CI server until we
+        // can figure out a Redshift testing strategy or other workaround
+        it.skip('should have ascending values sorted in the same direction as the quantiles', function(done) {
           this.timeout(10000);
           process.env.MIDAAS_API_PORT = 9999;
           process.env.MIDAAS_API_USERNAME = 'foo';
