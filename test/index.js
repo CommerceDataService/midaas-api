@@ -1,5 +1,3 @@
-var app = require('../app');
-var request = require('supertest')(app);
 var chai = require('chai'),
   assert = chai.assert,
   expect = chai.expect;
@@ -8,6 +6,9 @@ var sqlUtils = require('../app/utils');
 
 
 describe.skip('income quantiles', function() {
+    var app = require('../app');
+    var request = require('supertest')(app);
+
     before(function() {
         process.env.MIDAAS_API_PORT = 9999;
         process.env.MIDAAS_API_USERNAME = 'foo';
