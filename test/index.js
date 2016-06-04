@@ -6,10 +6,13 @@ var sqlUtils = require('../app/utils');
 
 
 describe.skip('income quantiles', function() {
-    var app = require('../app');
-    var request = require('supertest')(app);
+    var app;
+    var request;
 
     before(function() {
+        app = require('../app');
+        request = require('supertest')(app);
+
         process.env.MIDAAS_API_PORT = 9999;
         process.env.MIDAAS_API_USERNAME = 'foo';
         process.env.MIDAAS_API_PASSWORD = 'bar';
