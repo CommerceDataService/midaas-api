@@ -54,8 +54,8 @@ describe.skip('income quantiles', function() {
                 .auth('foo', 'bar')
                 .set('Accept', 'application/json')
                 .expect(200)
-                .then(function(fem_res) {
-                    expect(res.body.female).to.deep.equal(fem_res.body.overall);
+                .then(function(femaleRes) {
+                    expect(res.body.female).to.deep.equal(femaleRes.body.overall);
                 });
         });
     });
@@ -72,8 +72,8 @@ describe.skip('income quantiles', function() {
                 .auth('foo', 'bar')
                 .set('Accept', 'application/json')
                 .expect(200)
-                .then(function(male_res) {
-                    expect(res.body.male).to.deep.equal(male_res.body.overall);
+                .then(function(maleRes) {
+                    expect(res.body.male).to.deep.equal(maleRes.body.overall);
                 });
         });
     });
