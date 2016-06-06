@@ -1,13 +1,25 @@
-/**
- * Utils
- */
-
 var _       = require("lodash");
 var numeral = require("numeraljs");
 
-/***************************************************************
-                          METHODS
- ***************************************************************/
+
+var buildQuantileSQL = function(queryParams) {
+  if (!queryParams["year"]){
+    queryParams["year"] = 'current';
+  }
+  var compare = queryParams.compare;
+  if(compare && compare !== "") {
+    delete queryParams[compare];
+    delete queryParams["compare"];
+    var sql = "SELECT QUANTILE, INCOME, " + compare + " FROM ";
+    sql = appendWhereClause(sql, queryParams, compare) + " ORDER BY QUANTILE::INT ASC;";
+    return sql;
+  } else {
+    delete queryParams["compare"];
+    var sql = "SELECT QUANTILE, INCOME FROM ";
+    sql = appendWhereClause(sql, queryParams) + " ORDER BY QUANTILE::INT ASC;";
+    return sql;
+    }
+};
 
 var translateStateToQuery = function(state) {
   var lookup = {
@@ -180,10 +192,8 @@ var formatIncome = function(income) {
   return numeral(income).format("($0.00a)");
 };
 
-/***************************************************************
-                          EXPORTS
- ***************************************************************/
 
+module.exports.buildQuantileSQL = buildQuantileSQL;
 module.exports.appendWhereClause = appendWhereClause;
 module.exports.appendTranslatedWhereClause = appendTranslatedWhereClause;
 module.exports.validateQueryParams = validateQueryParams;
