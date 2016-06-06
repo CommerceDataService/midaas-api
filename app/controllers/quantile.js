@@ -5,8 +5,7 @@ var conn_options = require("../../scripts/redshift-config.json");
 
 var quantileController = {
   process: function(req, res, next){
-    var queryParams = _.pick(req.query, ["state", "race", "sex", "agegroup", "quantile", "compare"]);
-
+    var queryParams = _.pick(req.query, ["state", "race", "sex", "agegroup", "quantile", "compare", "year"]);
     utils.validateQueryParams(queryParams, function(err, validateCallback) {
       if(err) { return next(err); }
 
@@ -19,6 +18,7 @@ var quantileController = {
     });
 
   },
+
   getCompareIncomeQuantiles: function(sql, res, next) {
     pg.connect(conn_options, function(err, client, next) {
       if(err) { return next(err); }
@@ -30,7 +30,7 @@ var quantileController = {
         var results = response.rows;
         resultsObj = {};
         _.forEach(results, function(result) {
-          if(result[compare] != "") {
+          if(result[compare] !== "") {
             var path = "['" + result[compare] + "']" + "['" + result["quantile"] + "%']";
             _.set(resultsObj, path, result["income"]);
           }
@@ -62,8 +62,7 @@ var quantileController = {
         res.json({"overall": resultsObj});
       });
     });
-  },
-
+  }
 };
 
 module.exports = quantileController;

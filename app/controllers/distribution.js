@@ -6,8 +6,10 @@ var conn_options = require("../../scripts/redshift-config.json");
 
 var distributionController = {
   process: function(req, res, next){
-    var queryParams = _.pick(req.query, ["state", "race", "sex", "agegroup"]);
-
+    var queryParams = _.pick(req.query, ["state", "race", "sex", "agegroup", "year"]);
+    if (!queryParams["year"]){
+      queryParams["year"] = 'current';
+    }
     utils.validateQueryParams(queryParams, function(err, validateCallback) {
       if(err) { return next(err); }
       distributionController.getIncomeDistribution(queryParams, res, next);
@@ -18,7 +20,7 @@ var distributionController = {
     var sql =
       "SELECT FLOOR(PERNP/10000)*10000 AS BUCKET," +
       " SUM(PWGTP) AS COUNT" +
-      " FROM PUMS_2014_Persons";
+      " FROM ";
 
     sql = utils.appendTranslatedWhereClause(sql, queryParams);
     sql += " GROUP BY BUCKET;";

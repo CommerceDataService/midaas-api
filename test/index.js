@@ -80,7 +80,7 @@ describe.skip('income quantiles', function() {
 });
 
 describe('queryBuilding', function(){
-  it('should generate the correct sql statement for query on quantiles without any params', function(done){
+  it('should generate the correct sql statement for query on quantiles without any params and default to most recent year', function(done){
     var query = {};
     var statement = "SELECT QUANTILE, INCOME FROM PUMS_2014_Quantiles WHERE state='' AND sex='' AND agegroup='' AND race='' ORDER BY QUANTILE::INT ASC;";
     var generated = sqlUtils.buildQuantileSQL(query);
@@ -88,12 +88,13 @@ describe('queryBuilding', function(){
     done();
   });
 
-  it('should generate the correct sql statement for query on quantiles with some params', function(done){
+  it('should generate the correct sql statement for query on quantiles with some params including year', function(done){
     var query = {
       sex: 'female',
-      race: 'black'
+      race: 'black',
+      year: '2013'
     };
-    var statement = "SELECT QUANTILE, INCOME FROM PUMS_2014_Quantiles WHERE sex='female' AND race='black' AND state='' AND agegroup='' ORDER BY QUANTILE::INT ASC;";
+    var statement = "SELECT QUANTILE, INCOME FROM PUMS_2013_Quantiles WHERE sex='female' AND race='black' AND state='' AND agegroup='' ORDER BY QUANTILE::INT ASC;";
     var generated = sqlUtils.buildQuantileSQL(query);
     expect(generated).to.equal(statement);
     done();
@@ -109,4 +110,6 @@ describe('queryBuilding', function(){
     expect(generated).to.equal(statement);
     done();
   });
+
+
 });
