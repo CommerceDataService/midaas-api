@@ -30,7 +30,7 @@ var quantileController = {
         var results = response.rows;
         resultsObj = {};
         _.forEach(results, function(result) {
-          if(result[compare] != "") {
+          if(result[compare] !== "") {
             var path = "['" + result[compare] + "']" + "['" + result["quantile"] + "%']";
             _.set(resultsObj, path, result["income"]);
           }
