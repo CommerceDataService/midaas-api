@@ -1,8 +1,11 @@
 var chai = require('chai'),
   assert = chai.assert,
   expect = chai.expect;
+var chaiAsPromised = require('chai-as-promised');
 var _ = require('lodash');
 var sqlUtils = require('../app/utils');
+
+chai.use(chaiAsPromised);
 
 
 describe.skip('income quantiles', function() {
@@ -11,7 +14,7 @@ describe.skip('income quantiles', function() {
 
     before(function() {
         app = require('../app');
-        request = require('supertest')(app);
+        request = require('supertest-as-promised')(app);
 
         process.env.MIDAAS_API_PORT = 9999;
         process.env.MIDAAS_API_USERNAME = 'foo';
@@ -20,13 +23,13 @@ describe.skip('income quantiles', function() {
 
     // this test will be skipped on the CI server until we
     // can figure out a Redshift testing strategy or other workaround
-    it('should have ascending values sorted in the same direction as the quantiles', function(done) {
-      request
+    it('should have ascending values sorted in the same direction as the quantiles', function() {
+      return request
         .get('/income/quantiles')
         .auth('foo', 'bar')
         .set('Accept', 'application/json')
         .expect(200)
-        .end(function(err, res) {
+        .then(function(res) {
           var quantiles = _.toPairs(res.body.overall);
           // pull just the values (income) from the quantiles
           var vals = _.map(quantiles, function(o) { return o[1]; });
@@ -36,40 +39,42 @@ describe.skip('income quantiles', function() {
           expect(vals).to.have.length.above(5);
 
           expect(vals).to.deep.equal(vals_srt);
-
-          done();
         });
     });
 
-    it('should have same values in a compare query response as those produced from individual queries on that parameter',
-    function(done){
-      request
+    it('should return comparison results that match female results', function() {
+      return request
         .get('/income/quantiles?state=DC&compare=sex')
         .auth('foo', 'bar')
         .set('Accept', 'application/json')
         .expect(200)
-        .end(function(err, res) {
-          var compQFemale = res.body.female;
-          var compQMale = res.body.male;
-          request
-          .get('/income/quantiles?state=DC&sex=female')
-          .auth('foo', 'bar')
-          .set('Accept', 'application/json')
-          .expect(200)
-          .end(function(err, res){
-            var qFemale = res.body.overall;
-            request
-            .get('/income/quantiles?state=DC&sex=male')
-            .auth('foo', 'bar')
-            .set('Accept', 'application/json')
-            .expect(200)
-            .end(function(err, res){
-              var qMale = res.body.overall;
-              expect(compQFemale).to.deep.equal(qFemale);
-              expect(compQMale).to.deep.equal(qMale);
-              done();
-            });
-          });
+        .then(function(res) {
+            return request
+                .get('/income/quantiles?state=DC&sex=female')
+                .auth('foo', 'bar')
+                .set('Accept', 'application/json')
+                .expect(200)
+                .then(function(femaleRes) {
+                    expect(res.body.female).to.deep.equal(femaleRes.body.overall);
+                });
+        });
+    });
+
+    it('should return comparison results that match male results', function() {
+      return request
+        .get('/income/quantiles?state=DC&compare=sex')
+        .auth('foo', 'bar')
+        .set('Accept', 'application/json')
+        .expect(200)
+        .then(function(res) {
+            return request
+                .get('/income/quantiles?state=DC&sex=male')
+                .auth('foo', 'bar')
+                .set('Accept', 'application/json')
+                .expect(200)
+                .then(function(maleRes) {
+                    expect(res.body.male).to.deep.equal(maleRes.body.overall);
+                });
         });
     });
 });
