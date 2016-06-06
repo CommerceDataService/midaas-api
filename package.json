@@ -28,9 +28,11 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "chai-as-promised": "^5.3.0",
     "chai-sorted": "^0.1.0",
     "mocha": "^2.5.3",
     "supertest": "^1.2.0",
+    "supertest-as-promised": "^3.1.0",
     "tap-prettify": "0.0.2",
     "tape": "^4.5.1"
   }
