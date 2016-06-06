@@ -83,13 +83,13 @@ describe('queryBuilding', function(){
     done();
   });
 
-  it('should generate the correct sql statement for query on quantiles with some params', function(done){
+  it('should generate the correct sql statement for query on quantiles with some params including year', function(done){
     var query = {
       sex: 'female',
       race: 'black',
       year: '2013'
     };
-    var statement = "SELECT QUANTILE, INCOME FROM PUMS_2014_Quantiles WHERE sex='female' AND race='black' AND state='' AND agegroup='' ORDER BY QUANTILE::INT ASC;";
+    var statement = "SELECT QUANTILE, INCOME FROM PUMS_2013_Quantiles WHERE sex='female' AND race='black' AND state='' AND agegroup='' ORDER BY QUANTILE::INT ASC;";
     var generated = sqlUtils.buildQuantileSQL(query);
     expect(generated).to.equal(statement);
     done();
