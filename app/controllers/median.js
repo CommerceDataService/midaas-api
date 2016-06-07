@@ -5,7 +5,10 @@ var conn_options = require("../../scripts/redshift-config.json");
 
 var medianController = {
   process: function(req, res, next){
-    var queryParams = _.pick(req.query, ["state", "race", "sex", "agegroup", "compare"]);
+    var queryParams = _.pick(req.query, ["state", "race", "sex", "agegroup", "compare", "year"]);
+    if (!queryParams["year"]){
+      queryParams["year"] = 'current';
+    }
     utils.validateQueryParams(queryParams, function(err, validateCallback) {
       if(err) { return next(err); }
 
@@ -20,7 +23,7 @@ var medianController = {
   },
 
   getIncomeMedian: function(queryParams, res, next){
-    var sql = "SELECT INCOME FROM PUMS_2014_Quantiles";
+    var sql = "SELECT INCOME FROM ";
     sql = utils.appendWhereClause(sql, queryParams) + " AND QUANTILE='50';";
 
     pg.connect(conn_options, function(err, client, done) {
@@ -48,7 +51,7 @@ var medianController = {
     }
     delete queryParams["compare"];
 
-    var sql = "SELECT INCOME, " + compare + " FROM PUMS_2014_Quantiles";
+    var sql = "SELECT INCOME, " + compare + " FROM ";
     sql = utils.appendWhereClause(sql, queryParams) + " AND QUANTILE='50';";
 
     pg.connect(conn_options, function(err, client, done) {

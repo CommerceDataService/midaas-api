@@ -1,13 +1,25 @@
-/**
- * Utils
- */
-
 var _       = require("lodash");
 var numeral = require("numeraljs");
 
-/***************************************************************
-                          METHODS
- ***************************************************************/
+
+var buildQuantileSQL = function(queryParams) {
+  if (!queryParams["year"]){
+    queryParams["year"] = 'current';
+  }
+  var compare = queryParams.compare;
+  if(compare && compare !== "") {
+    delete queryParams[compare];
+    delete queryParams["compare"];
+    var sql = "SELECT QUANTILE, INCOME, " + compare + " FROM ";
+    sql = appendWhereClause(sql, queryParams, compare) + " ORDER BY QUANTILE::INT ASC;";
+    return sql;
+  } else {
+    delete queryParams["compare"];
+    var sql = "SELECT QUANTILE, INCOME FROM ";
+    sql = appendWhereClause(sql, queryParams) + " ORDER BY QUANTILE::INT ASC;";
+    return sql;
+    }
+};
 
 var translateStateToQuery = function(state) {
   var lookup = {
@@ -55,7 +67,6 @@ var translateSexToQuery = function(sex) {
 
 var translateAgegroupToQuery = function(agegroup) {
   return {
-    // "0-17": "AGEP <= 17",
     "18-24": "AGEP >= 18 AND AGEP <= 24",
     "25-34": "AGEP >= 25 AND AGEP <= 34",
     "35-44": "AGEP >= 35 AND AGEP <= 44",
@@ -74,43 +85,65 @@ var translateQuantileToQuery = function(quantile) {
   }
 };
 
+var translateYearToQuery = function(year){
+  var yearsArray = [2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014];
+  if (year == 'current'){
+    year = _.max(yearsArray);
+  }else {
+    year = parseInt(year);
+  }
+  if(_.includes(yearsArray, year)){
+    return {quantiles: "PUMS_"+year+"_Quantiles",
+            persons: "PUMS_"+year+"_Persons"};
+  } else {
+    return undefined;
+  }
+};
+
 var validateQueryParams = function(queryParams, callback) {
   // return an error callback if we encounter any issues
   state = queryParams["state"];
   if(state && !translateStateToQuery(state)) {
     return callback(new Error("Invalid value (" + state + ") supplied for state. " +
-      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+      "Please see https://midaas.commerce.gov/developers/ for documentation."));
   }
   race = queryParams["race"];
   if(race && !translateRaceToQuery(race)) {
     return callback(new Error("Invalid value (" + race + ") supplied for race. " +
-      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+      "Please see https://midaas.commerce.gov/developers/ for documentation."));
   }
   sex = queryParams["sex"];
   if(sex && !translateSexToQuery(sex)) {
     return callback(new Error("Invalid value (" + sex + ") supplied for sex. " +
-      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+      "Please see https://midaas.commerce.gov/developers/ for documentation."));
   }
   agegroup = queryParams["agegroup"];
   if(agegroup && !translateAgegroupToQuery(agegroup)) {
     return callback(new Error("Invalid value (" + agegroup + ") supplied for agegroup. " +
-      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+      "Please see https://midaas.commerce.gov/developers/ for documentation."));
   }
   quantile = queryParams["quantile"];
   if(quantile && !translateQuantileToQuery(quantile)) {
     return callback(new Error("Invalid value (" + quantile + ") supplied for quantile. " +
-      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+      "Please see https://midaas.commerce.gov/developers/ for documentation."));
   }
   compare = queryParams["compare"];
   if(compare && !_.includes(["state", "race", "sex", "agegroup"], compare)) {
     return callback(new Error("Invalid value (" + compare + ") supplied for compare. " +
-      "Please see https://github.com/presidential-innovation-fellows/midaas-api for documentation."));
+      "Please see https://midaas.commerce.gov/developers/ for documentation."));
+  }
+  year = queryParams["year"];
+  if(year && !translateYearToQuery(year)){
+    return callback(new Error("Invalid value(" + year +") supplied for year. " +
+    "Please see https://midaas.commerce.gov/developers/ for documentation."))
   }
   // return successfully if we haven't
   return callback();
-}
+};
 
 var appendWhereClause = function(sql, queryParams, compare) {
+  sql += translateYearToQuery(queryParams["year"]).quantiles;
+  delete queryParams["year"];
   var defaultParams = {
     'state': '',
     'sex': '',
@@ -119,7 +152,7 @@ var appendWhereClause = function(sql, queryParams, compare) {
   };
   sql += " WHERE ";
   sqlWhere = [];
-  defaultParams = _.omit(defaultParams, [compare])
+  defaultParams = _.omit(defaultParams, [compare]);
   _.forOwn(queryParams, function(value, key) {
     if (!(key.toLowerCase() === "quantile" && value === "")) {
       defaultParams= _.omit(defaultParams, [key]);
@@ -128,9 +161,8 @@ var appendWhereClause = function(sql, queryParams, compare) {
   });
   _.forOwn(defaultParams, function(value, key){
       sqlWhere.push(key + "='" + value + "'");
-  })
+  });
   sql += sqlWhere.join(" AND ");
-
   return sql;
 };
 
@@ -148,7 +180,8 @@ var getTranslatedWhereClause = function(queryParams) {
 };
 
 var appendTranslatedWhereClause = function(sql, queryParams) {
-  // console.log(queryParams);
+  sql += translateYearToQuery(queryParams["year"]).persons;
+  delete queryParams["year"];
   if(!_.isEmpty(queryParams)) {
     sql += getTranslatedWhereClause(queryParams);
   }
@@ -159,10 +192,8 @@ var formatIncome = function(income) {
   return numeral(income).format("($0.00a)");
 };
 
-/***************************************************************
-                          EXPORTS
- ***************************************************************/
 
+module.exports.buildQuantileSQL = buildQuantileSQL;
 module.exports.appendWhereClause = appendWhereClause;
 module.exports.appendTranslatedWhereClause = appendTranslatedWhereClause;
 module.exports.validateQueryParams = validateQueryParams;
